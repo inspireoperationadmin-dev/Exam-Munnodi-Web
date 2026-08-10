@@ -36,6 +36,9 @@ export interface TopicWithSubTopics {
 export interface StudentSubject {
   id: string;
   name: string;
+  nameEnglish?: string | null;
+  nameTamil?: string | null;
+  nameSinhala?: string | null;
 }
 
 export interface StudentProfile {

@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { theme } from '../../theme/theme';
 import { buildWhatsAppUrl } from '../../utils/whatsapp';
 import { useAuth } from '../../features/auth/AuthContext';
 
@@ -38,12 +39,25 @@ export function FloatingFeedbackButton() {
 
   return (
     <a
-      className="fixed bottom-4 right-4 z-40 inline-flex min-h-10 items-center justify-center rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-black text-slate-800 shadow-lg shadow-slate-950/10 transition hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-300"
+      aria-label={t('feedback')}
+      className={theme.feedback.button}
       href={buildWhatsAppUrl(message)}
       rel="noreferrer"
       target="_blank"
+      title={t('feedback')}
     >
-      {t('feedback')}
+      <span className={theme.feedback.icon} aria-hidden="true">
+        <svg className="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24">
+          <path
+            d="M7 8h10M7 12h6m-8.5 8 3.2-2.4H18a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v7.6A3 3 0 0 0 4.5 17.2V20Z"
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+          />
+        </svg>
+      </span>
+      <span className={theme.feedback.label}>{t('feedback')}</span>
     </a>
   );
 }

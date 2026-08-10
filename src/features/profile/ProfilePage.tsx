@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { LanguageSelect } from '../../components/layout/LanguageSelect';
 import { NotificationSettingsRow } from '../../components/layout/NotificationSettingsRow';
 import { AlertMessage } from '../../components/ui/AlertMessage';
 import { Button } from '../../components/ui/Button';
@@ -80,15 +79,6 @@ export function ProfilePage() {
               {auth?.email && <p className="mt-2 break-words text-sm font-bold text-slate-500">{auth.email}</p>}
             </div>
           </div>
-
-          <section className={`mt-6 ${theme.panel.muted}`}>
-            <label className="grid gap-2 sm:grid-cols-[1fr_auto] sm:items-center">
-              <span>
-                <span className="block text-sm font-black text-slate-950">{t('uiLanguage')}</span>
-              </span>
-              <LanguageSelect />
-            </label>
-          </section>
 
           <NotificationSettingsRow />
 

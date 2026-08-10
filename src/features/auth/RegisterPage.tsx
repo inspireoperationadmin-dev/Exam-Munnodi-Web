@@ -51,12 +51,11 @@ export function RegisterPage() {
 
   return (
     <AuthLayout
-      title={t('registerTitle')}
-      subtitle={t('registerSubtitle')}
       footerText={t('haveAccount')}
       footerAction={t('signIn')}
       footerHref="/login"
       supportMessage="Hi Exam Munnodi, I need help creating my student account."
+      title={t('createStudentAccount')}
     >
       <form className="grid gap-4" onSubmit={handleSubmit}>
         {error && <AlertMessage>{error}</AlertMessage>}

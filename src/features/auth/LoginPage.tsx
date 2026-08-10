@@ -51,12 +51,11 @@ export function LoginPage() {
 
   return (
     <AuthLayout
-      title={t('loginTitle')}
-      subtitle={t('loginSubtitle')}
       footerText={t('noAccount')}
       footerAction={t('createAccount')}
       footerHref="/register"
       supportMessage="Hi Exam Munnodi, I need help signing in to my student account."
+      title={t('welcomeBack')}
     >
       <form className="grid gap-4" onSubmit={handleSubmit}>
         {error && <AlertMessage>{error}</AlertMessage>}

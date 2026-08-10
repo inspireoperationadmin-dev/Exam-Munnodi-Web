@@ -2,7 +2,7 @@ import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { ProfileAvatar } from '../../components/layout/ProfileAvatar';
 import { AlertMessage } from '../../components/ui/AlertMessage';
-import { Button, ButtonLink } from '../../components/ui/Button';
+import { Button } from '../../components/ui/Button';
 import { Eyebrow, PageHeader, PageShell, Panel } from '../../components/ui/Layout';
 import { LoadingOverlay } from '../../components/ui/LoadingOverlay';
 import { useAuth } from '../auth/AuthContext';
@@ -12,6 +12,7 @@ import { examProgressStorageKey, examSessionStorageKey, getActiveSession, startM
 import type { StudentProfile } from '../../types/academic';
 import type { ActiveSession } from '../../types/exam';
 import { theme } from '../../theme/theme';
+import { getAcademicName, mediumToLanguage } from '../../utils/academicLanguage';
 import { getErrorMessage } from '../../utils/errors';
 
 const mockQuestionCounts = [20, 30, 50];
@@ -20,6 +21,26 @@ function formatRemaining(seconds: number | null) {
   if (seconds === null) return '';
   const minutes = Math.max(0, Math.ceil(seconds / 60));
   return `${minutes} min`;
+}
+
+function SubjectActionLink({ text, title, to }: { text: string; title: string; to: string }) {
+  return (
+    <article className="relative grid min-h-32 overflow-hidden rounded-2xl border border-indigo-100 bg-white p-5 text-left shadow-sm shadow-slate-200/70">
+      <span aria-hidden="true" className="absolute -right-10 -top-12 h-32 w-32 rounded-full bg-purple-200/45 blur-xl" />
+      <span className="relative z-10">
+        <span className="block text-xl font-black leading-7 text-slate-950">{title}</span>
+        <span className="mt-2 block text-sm font-semibold leading-6 text-slate-500">
+          {text}
+        </span>
+      </span>
+      <Link
+        className="relative z-10 mt-5 inline-flex w-fit items-center rounded-lg bg-blue-600 px-3 py-2 text-sm font-black text-white shadow-sm shadow-blue-900/10 transition hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-100"
+        to={to}
+      >
+        Open
+      </Link>
+    </article>
+  );
 }
 
 export function SubjectHubPage() {
@@ -33,6 +54,7 @@ export function SubjectHubPage() {
   const [activeSession, setActiveSession] = useState<ActiveSession | null>(null);
   const [mockQuestionCount, setMockQuestionCount] = useState(50);
   const [startingMock, setStartingMock] = useState(false);
+  const academicLanguage = mediumToLanguage(profile?.medium || 'English');
 
   useEffect(() => {
     let active = true;
@@ -64,6 +86,7 @@ export function SubjectHubPage() {
   const activeSubjectId = subjectId;
   const paperPath = `/papers?subjectId=${encodeURIComponent(activeSubjectId)}`;
   const selectedSubject = profile?.subjects.find((subject) => subject.id === activeSubjectId);
+  const selectedSubjectName = selectedSubject ? getAcademicName(selectedSubject, academicLanguage) : '';
 
   async function startMockExam() {
     setError('');
@@ -76,7 +99,7 @@ export function SubjectHubPage() {
       localStorage.setItem(examSessionStorageKey(started.sessionId), JSON.stringify({
         session: started,
         clientStartedAt: Date.now(),
-        paperTitle: selectedSubject?.name || t('mockExam'),
+        paperTitle: selectedSubjectName || t('mockExam'),
         backPath: mockBackPath,
       }));
       navigate(`/exam?sessionId=${encodeURIComponent(started.sessionId)}&backPath=${encodeURIComponent(mockBackPath)}`);
@@ -161,49 +184,29 @@ export function SubjectHubPage() {
           </Panel>
 
           <div className="grid gap-3 sm:grid-cols-2">
-            <ButtonLink
-              className="h-auto min-h-28 flex-col items-start justify-start text-left"
+            <SubjectActionLink
+              text={t('pastPapersHubText')}
+              title={t('pastPapers')}
               to={`${paperPath}&type=PastPaper`}
-              variant="secondary"
-            >
-              <span className="block text-lg font-black text-slate-950">{t('pastPapers')}</span>
-              <span className="mt-2 block text-sm font-semibold leading-6 text-slate-500">
-                {t('pastPapersHubText')}
-              </span>
-            </ButtonLink>
+            />
 
-            <ButtonLink
-              className="h-auto min-h-28 flex-col items-start justify-start text-left"
+            <SubjectActionLink
+              text={t('modelPapersHubText')}
+              title={t('modelPapers')}
               to={`${paperPath}&type=ModelPaper`}
-              variant="secondary"
-            >
-              <span className="block text-lg font-black text-slate-950">{t('modelPapers')}</span>
-              <span className="mt-2 block text-sm font-semibold leading-6 text-slate-500">
-                {t('modelPapersHubText')}
-              </span>
-            </ButtonLink>
+            />
 
-            <ButtonLink
-              className="h-auto min-h-28 flex-col items-start justify-start text-left"
+            <SubjectActionLink
+              text={t('topicWiseQuestionsHubText')}
+              title={t('topicWiseQuestions')}
               to={`/topics?subjectId=${encodeURIComponent(subjectId)}`}
-              variant="secondary"
-            >
-              <span className="block text-lg font-black text-slate-950">{t('topicWiseQuestions')}</span>
-              <span className="mt-2 block text-sm font-semibold leading-6 text-slate-500">
-                {t('topicWiseQuestionsHubText')}
-              </span>
-            </ButtonLink>
+            />
 
-            <ButtonLink
-              className="h-auto min-h-28 flex-col items-start justify-start text-left"
+            <SubjectActionLink
+              text={t('progressHubText')}
+              title={t('progress')}
               to={`/progress?subjectId=${encodeURIComponent(subjectId)}`}
-              variant="secondary"
-            >
-              <span className="block text-lg font-black text-slate-950">{t('progress')}</span>
-              <span className="mt-2 block text-sm font-semibold leading-6 text-slate-500">
-                {t('progressHubText')}
-              </span>
-            </ButtonLink>
+            />
 
           </div>
         </section>

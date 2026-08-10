@@ -18,8 +18,8 @@ export function LoadingOverlay({ label, open }: LoadingOverlayProps) {
       <section className="grid w-full max-w-xs justify-items-center gap-3 rounded-lg border border-slate-200 bg-white p-5 text-center shadow-xl">
         <img
           alt=""
-          className="h-14 w-14 rounded-lg border border-slate-200 bg-white object-cover p-1 motion-safe:animate-pulse"
-          src="/favicon.png"
+          className="h-14 w-auto max-w-44 object-contain motion-safe:animate-pulse"
+          src="/logoDark.svg"
         />
         <p className={theme.text.panelTitle}>{label}</p>
         <div className="h-1.5 w-28 overflow-hidden rounded-full bg-slate-200">

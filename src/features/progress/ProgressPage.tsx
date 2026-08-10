@@ -18,6 +18,7 @@ import type { StudentProfile } from '../../types/academic';
 import { getErrorMessage } from '../../utils/errors';
 import { useAuth } from '../auth/AuthContext';
 import { theme } from '../../theme/theme';
+import { getAcademicName, mediumToLanguage } from '../../utils/academicLanguage';
 
 function formatPercent(value: number) {
   return `${Math.round(value)}%`;
@@ -84,6 +85,7 @@ export function ProgressPage() {
   }, [subjectId, t]);
 
   const selectedSubject = profile?.subjects.find((subject) => subject.id === subjectId);
+  const academicLanguage = mediumToLanguage(profile?.medium || 'English');
   const improvementSubTopics = useMemo(
     () => [...subTopicPerformance].sort((a, b) => a.correctPercentage - b.correctPercentage).slice(0, 5),
     [subTopicPerformance],
@@ -97,7 +99,7 @@ export function ProgressPage() {
     return <Navigate to="/" replace />;
   }
 
-  const subjectName = selectedSubject?.name || subjectPerformance?.subjectName || t('subject');
+  const subjectName = selectedSubject ? getAcademicName(selectedSubject, academicLanguage) : subjectPerformance?.subjectName || t('subject');
   const backPath = `/subject?subjectId=${encodeURIComponent(subjectId)}`;
   const hasProgress = Boolean(subjectPerformance || subTopicPerformance.length || history.length);
 

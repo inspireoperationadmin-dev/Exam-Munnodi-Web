@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'https://exam-munnodi-backend-production.up.railway.app/api';
+const API_URL = import.meta.env.VITE_API_BASE_URL ;
 
 type RequestOptions = RequestInit & {
   auth?: boolean;

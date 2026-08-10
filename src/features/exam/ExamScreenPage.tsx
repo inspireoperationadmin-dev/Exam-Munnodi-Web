@@ -488,9 +488,6 @@ export function ExamScreenPage() {
                       <p className="text-xs font-black uppercase tracking-wide text-slate-500">
                         {t('questionNumber')} {currentIndex + 1} {t('of')} {questions.length}
                       </p>
-                      <p className="mt-1 text-sm font-bold text-slate-500">
-                        {currentQuestion.marks} {t('score')}
-                      </p>
                     </div>
                     {isTimedMode && (
                       <div className="hidden rounded-md bg-emerald-700 px-4 py-2 text-right text-white sm:block">
@@ -500,11 +497,8 @@ export function ExamScreenPage() {
                     )}
                   </div>
 
-                  <div className="mt-5 flex min-w-0 items-start gap-3">
-                    <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-emerald-700 text-sm font-black text-white">
-                      {currentIndex + 1}
-                    </span>
-                    <div className="min-w-0 flex-1">
+                  <div className="mt-5 min-w-0">
+                    <div className="min-w-0">
                       <MathText
                         className="block break-words text-base font-black leading-8 text-slate-950 [overflow-wrap:anywhere] sm:text-lg"
                         text={currentQuestion.questionText}

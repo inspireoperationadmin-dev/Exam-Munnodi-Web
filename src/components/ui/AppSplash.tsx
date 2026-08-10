@@ -9,9 +9,9 @@ export function AppSplash({ label }: AppSplashProps) {
     <main className={`grid min-h-screen place-items-center ${theme.colors.page} px-4`}>
       <section className="grid justify-items-center gap-4 text-center">
         <img
-          alt=""
-          className="h-20 w-20 rounded-xl border border-slate-200 bg-white object-cover p-1 shadow-sm motion-safe:animate-pulse"
-          src="/favicon.png"
+          alt={label}
+          className="h-20 w-auto max-w-64 object-contain motion-safe:animate-pulse"
+          src="/logoDark.svg"
         />
         <div>
           <p className={theme.text.brand}>{label}</p>

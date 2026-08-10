@@ -63,6 +63,7 @@ export function TopicListPage() {
     [profile?.medium],
   );
   const selectedSubject = profile?.subjects.find((subject) => subject.id === subjectId);
+  const selectedSubjectName = selectedSubject ? getAcademicName(selectedSubject, academicLanguage) : '';
   const backPath = subjectId ? `/subject?subjectId=${encodeURIComponent(subjectId)}` : '/';
   const performanceBySubTopic = useMemo(
     () => new Map(subTopicPerformance.map((item) => [item.subTopicId, item])),
@@ -113,7 +114,7 @@ export function TopicListPage() {
           <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
             <div>
               <Eyebrow>
-                {selectedSubject?.name || t('subject')}
+                {selectedSubjectName || t('subject')}
               </Eyebrow>
               <h1 className="mt-1 text-2xl font-black leading-tight text-slate-950">
                 {t('topicWiseQuestions')}
