@@ -15,8 +15,7 @@ import { theme } from '../../theme/theme';
 import { getAcademicName, mediumToLanguage } from '../../utils/academicLanguage';
 import { getErrorMessage } from '../../utils/errors';
 import { useAuth } from '../auth/AuthContext';
-
-const limits = [10, 20, 30];
+import { launchQuestionCount } from '../../config/exam';
 
 export function TopicListPage() {
   const { t } = useLanguage();
@@ -27,7 +26,6 @@ export function TopicListPage() {
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [topics, setTopics] = useState<TopicWithSubTopics[]>([]);
   const [subTopicPerformance, setSubTopicPerformance] = useState<SubTopicPerformance[]>([]);
-  const [limit, setLimit] = useState(10);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [startingTopicKey, setStartingTopicKey] = useState('');
@@ -82,7 +80,7 @@ export function TopicListPage() {
 
     try {
       const topicBackPath = `/topics?subjectId=${encodeURIComponent(activeSubjectId)}`;
-      const started = await startTopicSession(topic.id, limit, mode);
+      const started = await startTopicSession(topic.id, launchQuestionCount, mode);
       localStorage.removeItem(examProgressStorageKey(started.sessionId));
       localStorage.setItem(examSessionStorageKey(started.sessionId), JSON.stringify({
         session: started,
@@ -111,7 +109,7 @@ export function TopicListPage() {
         </PageHeader>
 
         <Panel>
-          <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-end">
+          <div className="grid gap-4">
             <div>
               <Eyebrow>
                 {selectedSubjectName || t('subject')}
@@ -123,18 +121,6 @@ export function TopicListPage() {
                 {t('topicListSubtitle')}
               </p>
             </div>
-            <label className="grid gap-2">
-              <span className="text-sm font-black text-slate-700">{t('questionLimit')}</span>
-              <select
-                className={theme.control.select}
-                onChange={(event) => setLimit(Number(event.target.value))}
-                value={limit}
-              >
-                {limits.map((item) => (
-                  <option key={item} value={item}>{item}</option>
-                ))}
-              </select>
-            </label>
           </div>
         </Panel>
 

@@ -14,8 +14,7 @@ import type { ActiveSession } from '../../types/exam';
 import { theme } from '../../theme/theme';
 import { getAcademicName, mediumToLanguage } from '../../utils/academicLanguage';
 import { getErrorMessage } from '../../utils/errors';
-
-const mockQuestionCounts = [20, 30, 50];
+import { launchQuestionCount } from '../../config/exam';
 
 function formatRemaining(seconds: number | null) {
   if (seconds === null) return '';
@@ -52,7 +51,6 @@ export function SubjectHubPage() {
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [error, setError] = useState('');
   const [activeSession, setActiveSession] = useState<ActiveSession | null>(null);
-  const [mockQuestionCount, setMockQuestionCount] = useState(50);
   const [startingMock, setStartingMock] = useState(false);
   const academicLanguage = mediumToLanguage(profile?.medium || 'English');
 
@@ -94,7 +92,7 @@ export function SubjectHubPage() {
 
     try {
       const mockBackPath = `/subject?subjectId=${encodeURIComponent(activeSubjectId)}`;
-      const started = await startMockSession(activeSubjectId, mockQuestionCount);
+      const started = await startMockSession(activeSubjectId, launchQuestionCount);
       localStorage.removeItem(examProgressStorageKey(started.sessionId));
       localStorage.setItem(examSessionStorageKey(started.sessionId), JSON.stringify({
         session: started,
@@ -158,19 +156,7 @@ export function SubjectHubPage() {
                   {t('mockExamCardText')}
                 </span>
               </div>
-              <div className="grid gap-2 sm:grid-cols-[140px_180px]">
-                <label className="grid gap-1">
-                  <span className="text-sm font-black text-slate-700">{t('questionLimit')}</span>
-                  <select
-                    className={theme.control.select}
-                    onChange={(event) => setMockQuestionCount(Number(event.target.value))}
-                    value={mockQuestionCount}
-                  >
-                    {mockQuestionCounts.map((count) => (
-                      <option key={count} value={count}>{count}</option>
-                    ))}
-                  </select>
-                </label>
+              <div className="grid gap-2 sm:grid-cols-[180px]">
                 <Button
                   className="self-end"
                   disabled={startingMock}
