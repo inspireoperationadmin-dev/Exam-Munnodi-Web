@@ -369,6 +369,274 @@ function formatPerformance(value: number) {
   return `${Math.round(value)}%`;
 }
 
+type LandingTranslator = ReturnType<typeof useLanguage>['t'];
+
+function PublicLanding({ t }: { t: LandingTranslator }) {
+  const problemItems = [
+    t('landingProblemRevision'),
+    t('landingProblemRepeat'),
+    t('landingProblemTiming'),
+    t('landingProblemFocus'),
+  ];
+
+  const featureItems = [
+    [t('landingFeaturePapersTitle'), t('landingFeaturePapersText')],
+    [t('landingFeatureTopicsTitle'), t('landingFeatureTopicsText')],
+    [t('landingFeatureMocksTitle'), t('landingFeatureMocksText')],
+    [t('landingFeatureProgressTitle'), t('landingFeatureProgressText')],
+  ];
+
+  const progressItems = [
+    [t('coverage'), t('landingProgressCoverage')],
+    [t('mastery'), t('landingProgressMastery')],
+    [t('accuracy'), t('landingProgressAccuracy')],
+    [t('health'), t('landingProgressHealth')],
+  ];
+
+  const howItWorksItems = [
+    [t('landingStepProfileTitle'), t('landingStepProfileText'), '/images/setup-preview.png'],
+    [t('landingStepPracticeTitle'), t('landingStepPracticeText'), '/images/subject-hub-preview.png'],
+    [t('landingStepMockTitle'), t('landingStepMockText'), '/images/exam-preview.png'],
+    [t('landingStepProgressTitle'), t('landingStepProgressText'), '/images/progress-preview.png'],
+  ];
+
+  const trustItems = [
+    t('landingTrustSriLanka'),
+    t('landingTrustMedium'),
+    t('landingTrustMeasure'),
+  ];
+
+  return (
+    <main className={theme.shell.main}>
+      <section className={`${theme.shell.centered} ${theme.width.xl}`}>
+        <header className={theme.shell.header}>
+          <AppLogo label={t('brandName')} />
+          <div className="hidden items-center gap-2 sm:flex">
+            <ButtonLink size="sm" to="/login" variant="secondary">
+              {t('signIn')}
+            </ButtonLink>
+            <ButtonLink className={getStartedButtonClass} size="sm" to="/login" variant="primary">
+              {t('getStarted')}
+            </ButtonLink>
+          </div>
+        </header>
+
+        <div className="grid gap-5 py-5 sm:py-7">
+          <section className="relative overflow-hidden rounded-2xl border border-indigo-100 bg-white shadow-sm shadow-indigo-100/70">
+            <img
+              alt=""
+              aria-hidden="true"
+              className="absolute inset-0 h-full w-full object-cover object-center"
+              src="/images/herobanner.png"
+            />
+            <div className="absolute inset-0 bg-linear-to-r from-white/94 via-white/78 to-white/18" />
+            <div className="absolute inset-0 bg-linear-to-t from-indigo-950/16 via-transparent to-transparent" />
+
+            <div className="relative z-10 grid min-h-112 items-center gap-5 px-5 py-8 sm:min-h-120 sm:px-9 lg:grid-cols-[minmax(0,0.88fr)_minmax(280px,0.55fr)]">
+              <div className="max-w-2xl">
+                <p className={theme.text.eyebrow}>{t('landingHeroEyebrow')}</p>
+                <h1 className="mt-3 max-w-2xl text-3xl font-black leading-tight text-slate-950 sm:text-5xl">
+                  {t('landingHeroTitle')}
+                  <span className="text-indigo-600"> {t('landingHeroHighlight')}</span>
+                </h1>
+                <p className="mt-4 max-w-xl text-sm font-semibold leading-6 text-slate-600 sm:text-base">
+                  {t('landingHeroSubtitle')}
+                </p>
+
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <ButtonLink className={getStartedButtonClass} size="md" to="/login" variant="primary">
+                    {t('getStarted')}
+                  </ButtonLink>
+                  <ButtonLink size="md" to="/register" variant="secondary">
+                    {t('createAccount')}
+                  </ButtonLink>
+                </div>
+              </div>
+
+              <div className="hidden rounded-2xl border border-white/80 bg-white/75 p-4 shadow-sm shadow-indigo-100/70 backdrop-blur-sm lg:block">
+                <div className="grid gap-3">
+                  {[
+                    [t('mockExam'), t('landingHeroMock')],
+                    [t('topicExam'), t('landingHeroTopic')],
+                    [t('mastery'), t('landingHeroMastery')],
+                  ].map(([title, text]) => (
+                    <div className="rounded-xl border border-indigo-100 bg-white/85 p-3" key={title}>
+                      <p className="text-xs font-black uppercase tracking-wide text-indigo-600">{title}</p>
+                      <p className="mt-1 text-sm font-bold leading-5 text-slate-700">{text}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="grid gap-4 lg:grid-cols-[0.86fr_1.14fr]">
+            <div className="rounded-2xl border border-indigo-100 bg-white p-5 shadow-sm shadow-slate-200/70 sm:p-6">
+              <p className={theme.text.eyebrow}>{t('landingProblemEyebrow')}</p>
+              <h2 className="mt-2 text-2xl font-black leading-tight text-slate-950 sm:text-3xl">
+                {t('landingProblemTitle')}
+              </h2>
+              <div className="mt-5 grid gap-2">
+                {problemItems.map((text) => (
+                  <p className="rounded-xl bg-slate-50 px-3 py-2 text-sm font-bold leading-6 text-slate-700" key={text}>
+                    {text}
+                  </p>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-indigo-100 bg-linear-to-br from-indigo-50 via-white to-white p-5 shadow-sm shadow-indigo-100/70 sm:p-6">
+              <p className={theme.text.eyebrow}>{t('landingSolutionEyebrow')}</p>
+              <h2 className="mt-2 text-2xl font-black leading-tight text-slate-950 sm:text-3xl">
+                {t('landingSolutionTitle')}
+              </h2>
+              <p className="mt-3 max-w-2xl text-sm font-semibold leading-6 text-slate-600 sm:text-base">
+                {t('landingSolutionText')}
+              </p>
+              <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                {[t('landingGoalUnderstand'), t('landingGoalPractice'), t('landingGoalExam')].map((text, index) => (
+                  <div className="rounded-xl border border-indigo-100 bg-white/85 p-3" key={text}>
+                    <span className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600 text-sm font-black text-white">
+                      {index + 1}
+                    </span>
+                    <p className="mt-3 text-sm font-bold leading-6 text-slate-700">{text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="rounded-2xl border border-indigo-100 bg-white p-5 shadow-sm shadow-slate-200/70 sm:p-6">
+            <div className="grid gap-2 sm:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)] sm:items-end">
+              <div>
+                <p className={theme.text.eyebrow}>{t('landingFeaturesEyebrow')}</p>
+                <h2 className="mt-2 text-2xl font-black leading-tight text-slate-950 sm:text-3xl">
+                  {t('landingFeaturesTitle')}
+                </h2>
+              </div>
+              <p className="text-sm font-semibold leading-6 text-slate-600">
+                {t('landingFeaturesText')}
+              </p>
+            </div>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {featureItems.map(([title, text], index) => (
+                <div className="rounded-xl border border-indigo-100 bg-indigo-50/35 p-4" key={title}>
+                  <span className="grid h-9 w-9 place-items-center rounded-lg bg-white text-sm font-black text-indigo-700 shadow-sm shadow-indigo-100/70">
+                    {index + 1}
+                  </span>
+                  <h3 className="mt-4 text-lg font-black text-slate-950">{title}</h3>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">{text}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="grid gap-4 rounded-2xl border border-indigo-100 bg-linear-to-br from-white via-indigo-50/60 to-white p-5 shadow-sm shadow-indigo-100/70 sm:p-6 lg:grid-cols-[0.72fr_1fr]">
+            <div>
+              <p className={theme.text.eyebrow}>{t('landingProgressEyebrow')}</p>
+              <h2 className="mt-2 text-2xl font-black leading-tight text-slate-950 sm:text-3xl">
+                {t('landingProgressTitle')}
+              </h2>
+              <p className="mt-3 text-sm font-semibold leading-6 text-slate-600">
+                {t('landingProgressText')}
+              </p>
+              <div className="mt-4 rounded-xl border border-emerald-100 bg-emerald-50 p-4">
+                <p className="text-sm font-black text-emerald-800">{t('landingProgressMasteryFocusTitle')}</p>
+                <p className="mt-1 text-sm font-semibold leading-6 text-emerald-900/80">
+                  {t('landingProgressMasteryFocusText')}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              {progressItems.map(([title, text]) => (
+                <div className="rounded-xl border border-indigo-100 bg-white/85 p-4 shadow-sm shadow-indigo-100/50" key={title}>
+                  <p className="text-sm font-black uppercase tracking-wide text-indigo-700">{title}</p>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">{text}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="rounded-2xl border border-indigo-100 bg-white p-5 shadow-sm shadow-slate-200/70 sm:p-6">
+            <div className="grid gap-2 sm:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)] sm:items-end">
+              <div>
+                <p className={theme.text.eyebrow}>{t('landingHowEyebrow')}</p>
+                <h2 className="mt-2 text-2xl font-black leading-tight text-slate-950 sm:text-3xl">
+                  {t('landingHowTitle')}
+                </h2>
+              </div>
+              <p className="text-sm font-semibold leading-6 text-slate-600">
+                {t('landingHowText')}
+              </p>
+            </div>
+            <div className="mt-5 grid gap-3 lg:grid-cols-4">
+              {howItWorksItems.map(([title, text, imageSrc], index) => (
+                <div className="rounded-xl border border-indigo-100 bg-slate-50/70 p-4" key={title}>
+                  <span className="text-xs font-black uppercase tracking-wide text-indigo-600">
+                    {t('step')} {index + 1}
+                  </span>
+                  <div className="my-4 flex min-h-80 items-center justify-center rounded-xl border border-indigo-100 bg-white p-3 shadow-inner sm:min-h-88 lg:min-h-80">
+                    <img
+                      alt={title}
+                      className="block max-h-80 max-w-full rounded-lg object-contain sm:max-h-88 lg:max-h-80"
+                      loading="lazy"
+                      src={imageSrc}
+                    />
+                  </div>
+                  <h3 className="text-base font-black text-slate-950">{title}</h3>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">{text}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="grid gap-4 lg:grid-cols-[1fr_0.74fr]">
+            <div className="rounded-2xl border border-indigo-100 bg-white p-5 shadow-sm shadow-slate-200/70 sm:p-6">
+              <p className={theme.text.eyebrow}>{t('landingTrustEyebrow')}</p>
+              <h2 className="mt-2 text-2xl font-black leading-tight text-slate-950 sm:text-3xl">
+                {t('landingTrustTitle')}
+              </h2>
+              <div className="mt-5 grid gap-3">
+                {trustItems.map((text) => (
+                  <p className="rounded-xl border border-indigo-100 bg-indigo-50/40 px-4 py-3 text-sm font-bold leading-6 text-slate-700" key={text}>
+                    {text}
+                  </p>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-indigo-100 bg-indigo-950 p-5 text-white shadow-sm shadow-indigo-950/15 sm:p-6">
+              <p className="text-xs font-black uppercase tracking-wide text-indigo-200">{t('landingCtaEyebrow')}</p>
+              <h2 className="mt-2 text-2xl font-black leading-tight sm:text-3xl">
+                {t('landingCtaTitle')}
+              </h2>
+              <p className="mt-3 text-sm font-semibold leading-6 text-indigo-100">
+                {t('landingCtaText')}
+              </p>
+              <ButtonLink className="mt-5 !border-blue-500 !bg-blue-500 !text-white hover:!border-blue-400 hover:!bg-blue-400" size="md" to="/login" variant="primary">
+                {t('getStarted')}
+              </ButtonLink>
+            </div>
+          </section>
+
+          <footer className="grid gap-3 border-t border-indigo-100 py-5 text-sm font-semibold text-slate-500 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+            <div>
+              <AppLogo label={t('brandName')} />
+              <p className="mt-2 max-w-lg leading-6">{t('landingFooterText')}</p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link className={theme.link.text} to="/login">{t('signIn')}</Link>
+              <Link className={theme.link.text} to="/register">{t('createAccount')}</Link>
+              <a className={theme.link.text} href="https://wa.me/94763143738" rel="noreferrer" target="_blank">{t('needHelp')}</a>
+            </div>
+          </footer>
+        </div>
+      </section>
+    </main>
+  );
+}
+
 export function LandingPage() {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -427,6 +695,8 @@ export function LandingPage() {
   }
 
   if (!isAuthenticated) {
+    return <PublicLanding t={t} />;
+
     return (
       <main className={theme.shell.main}>
         <section className={`${theme.shell.centered} ${theme.width.lg}`}>
