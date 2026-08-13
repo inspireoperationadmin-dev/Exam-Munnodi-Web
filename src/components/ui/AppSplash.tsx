@@ -11,7 +11,7 @@ export function AppSplash({ label }: AppSplashProps) {
         <img
           alt={label}
           className="h-20 w-auto max-w-64 object-contain motion-safe:animate-pulse"
-          src="/logoDark.svg"
+          src="/images/appicon.png"
         />
         <div>
           <p className={theme.text.brand}>{label}</p>

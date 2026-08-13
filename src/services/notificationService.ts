@@ -1,9 +1,13 @@
 import { apiRequest } from './api';
 
 const dismissedAtKey = 'student_notification_prompt_dismissed_at';
-const enabledAtKey = 'student_notification_enabled_at';
 const currentWebDeviceIdKey = 'student_notification_current_web_device_id';
 const promptCooldownMs = 7 * 24 * 60 * 60 * 1000;
+const defaultPreference: NotificationPreference = {
+  studyRemindersEnabled: true,
+  dailyReminderTime: '18:30',
+  timeZoneId: 'Asia/Colombo',
+};
 
 interface VapidPublicKeyResponse {
   isConfigured: boolean;
@@ -44,7 +48,12 @@ export function getNotificationSupportStatus() {
 
 export function shouldShowNotificationPrompt(pathname: string, isAuthenticated: boolean, isReady: boolean) {
   if (!isAuthenticated || !isReady) return false;
-  if (['/login', '/register', '/verify-email', '/setup', '/exam'].includes(pathname)) return false;
+  if (
+    ['/login', '/register', '/verify-email', '/setup'].includes(pathname)
+    || pathname.startsWith('/exam')
+  ) {
+    return false;
+  }
 
   const status = getNotificationSupportStatus();
   if (status === 'unsupported' || status === 'granted' || status === 'denied') return false;
@@ -152,27 +161,10 @@ export async function enableStudyNotifications() {
     }),
   });
 
+  await ensureStudyReminderPreference();
+
   localStorage.setItem(currentWebDeviceIdKey, device.id);
-  localStorage.setItem(enabledAtKey, String(Date.now()));
   return device;
-}
-
-export async function disableStudyNotifications() {
-  const settings = await getNotificationSettingsState();
-
-  if (settings.deviceId) {
-    await apiRequest(`/notifications/devices/${settings.deviceId}`, {
-      method: 'DELETE',
-    });
-  }
-
-  const subscription = await getExistingPushSubscription();
-  if (subscription) {
-    await subscription.unsubscribe();
-  }
-
-  localStorage.removeItem(currentWebDeviceIdKey);
-  localStorage.removeItem(enabledAtKey);
 }
 
 export function getNotificationPreferences() {
@@ -183,6 +175,17 @@ export function updateNotificationPreferences(payload: NotificationPreference) {
   return apiRequest<NotificationPreference>('/notifications/preferences', {
     method: 'PUT',
     body: JSON.stringify(payload),
+  });
+}
+
+async function ensureStudyReminderPreference() {
+  const current = await getNotificationPreferences().catch(() => defaultPreference);
+
+  return updateNotificationPreferences({
+    ...current,
+    studyRemindersEnabled: true,
+    dailyReminderTime: current.dailyReminderTime || defaultPreference.dailyReminderTime,
+    timeZoneId: current.timeZoneId || defaultPreference.timeZoneId,
   });
 }
 

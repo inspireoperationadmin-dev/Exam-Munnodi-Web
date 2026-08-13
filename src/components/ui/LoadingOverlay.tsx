@@ -19,7 +19,7 @@ export function LoadingOverlay({ label, open }: LoadingOverlayProps) {
         <img
           alt=""
           className="h-14 w-auto max-w-44 object-contain motion-safe:animate-pulse"
-          src="/logoDark.svg"
+          src="/images/appicon.png"
         />
         <p className={theme.text.panelTitle}>{label}</p>
         <div className="h-1.5 w-28 overflow-hidden rounded-full bg-slate-200">

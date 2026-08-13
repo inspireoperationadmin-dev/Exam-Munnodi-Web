@@ -11,7 +11,7 @@ import { getStudentProfile } from '../../services/academicService';
 import { examProgressStorageKey, examSessionStorageKey, startPaperSession } from '../../services/examService';
 import { getPaperDetail, getPaperPreviewQuestions } from '../../services/paperService';
 import type { ExamQuestion, PaperDetail, StudentProfile } from '../../types/academic';
-import type { ExamMode } from '../../types/exam';
+import type { PaperSessionMode } from '../../types/exam';
 import { theme } from '../../theme/theme';
 import { getErrorMessage } from '../../utils/errors';
 
@@ -28,7 +28,7 @@ export function PaperPreviewPage() {
   const [questions, setQuestions] = useState<ExamQuestion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [startingMode, setStartingMode] = useState<ExamMode | null>(null);
+  const [startingMode, setStartingMode] = useState<PaperSessionMode | null>(null);
 
   useEffect(() => {
     if (!paperId) return;
@@ -64,7 +64,7 @@ export function PaperPreviewPage() {
     ? `/papers?subjectId=${encodeURIComponent(subjectId)}&type=${encodeURIComponent(type)}`
     : '/';
 
-  async function startSession(mode: Extract<ExamMode, 'Practice' | 'FixedExam'>) {
+  async function startSession(mode: PaperSessionMode) {
     if (!paperId || !questions.length || startingMode !== null) return;
 
     setError('');
@@ -211,20 +211,20 @@ export function PaperPreviewPage() {
                 className={theme.button.tall}
                 fullWidth
                 disabled={loading || !questions.length || startingMode !== null}
-                onClick={() => void startSession('Practice')}
+                onClick={() => void startSession('PaperPractice')}
                 type="button"
               >
-                {startingMode === 'Practice' ? t('loading') : t('startPractice')}
+                {startingMode === 'PaperPractice' ? t('loading') : t('startPractice')}
               </Button>
               <Button
                 className={theme.button.tall}
                 fullWidth
                 disabled={loading || !questions.length || startingMode !== null}
-                onClick={() => void startSession('FixedExam')}
+                onClick={() => void startSession('PaperExam')}
                 type="button"
                 variant="secondary"
               >
-                {startingMode === 'FixedExam' ? t('loading') : t('startPaperExam')}
+                {startingMode === 'PaperExam' ? t('loading') : t('startPaperExam')}
               </Button>
             </div>
           </aside>

@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { FloatingFeedbackButton } from './components/layout/FloatingFeedbackButton';
 import { NotificationPrompt } from './components/layout/NotificationPrompt';
 import { ProtectedRoute } from './components/routing/ProtectedRoute';
+import { ScrollToTop } from './components/routing/ScrollToTop';
 import { SetupRoute } from './components/routing/SetupRoute';
 import { AppSplash } from './components/ui/AppSplash';
 import { LandingPage } from './features/landing/LandingPage';
@@ -35,6 +36,7 @@ function App() {
 
   return (
     <>
+      <ScrollToTop />
       <Routes>
         <Route
           path="/"

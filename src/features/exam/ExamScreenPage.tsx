@@ -7,6 +7,8 @@ import { MathText } from '../../components/ui/MathText';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { abandonExamSession, endExamSession, examProgressStorageKey, examSessionStorageKey, getSessionResume, submitExamAnswer } from '../../services/examService';
 import type { EndSessionResult, StartSessionResult, SubmitAnswerRequest } from '../../types/exam';
+import { isPracticeMode, isTimedMode as isTimedExamMode } from '../../types/exam';
+import { getExamModeLabelKey } from '../../utils/examMode';
 import { getErrorMessage } from '../../utils/errors';
 
 interface StoredExamSession {
@@ -190,8 +192,8 @@ export function ExamScreenPage() {
     [session?.questions],
   );
   const currentQuestion = questions[currentIndex];
-  const isPractice = session?.mode === 'Practice';
-  const isTimedMode = session?.mode === 'FixedExam' || session?.mode === 'MockExam';
+  const isPractice = isPracticeMode(session?.mode);
+  const isTimedMode = isTimedExamMode(session?.mode);
   const answeredCount = questions.filter((question) => selectedAnswers[question.id]).length;
 
   const remainingSeconds = useMemo(() => {
@@ -433,7 +435,7 @@ export function ExamScreenPage() {
           </button>
           <div className="text-right">
             <p className="text-xs font-black uppercase tracking-wide text-slate-500">
-              {isPractice ? t('practice') : session.mode === 'MockExam' ? t('mockExam') : isTimedMode ? t('paperExam') : ''}
+              {t(getExamModeLabelKey(session.mode))}
             </p>
             {isTimedMode && (
               <p className="mt-1 text-sm font-black tabular-nums text-slate-950">

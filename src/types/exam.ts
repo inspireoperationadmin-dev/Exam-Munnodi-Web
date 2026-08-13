@@ -1,6 +1,16 @@
 import type { ExamQuestion } from './academic';
 
-export type ExamMode = 'Practice' | 'FixedExam' | 'MockExam';
+export type ExamMode = 'PaperPractice' | 'PaperExam' | 'MockExam' | 'TopicExam' | 'TopicPractice';
+export type PaperSessionMode = Extract<ExamMode, 'PaperPractice' | 'PaperExam'>;
+export type TopicSessionMode = Extract<ExamMode, 'TopicExam' | 'TopicPractice'>;
+
+export function isPracticeMode(mode?: ExamMode | null) {
+  return mode === 'PaperPractice' || mode === 'TopicPractice';
+}
+
+export function isTimedMode(mode?: ExamMode | null) {
+  return mode === 'PaperExam' || mode === 'MockExam' || mode === 'TopicExam';
+}
 
 export interface StartedExamQuestion extends ExamQuestion {
   correctOptionId?: string | null;

@@ -7,6 +7,7 @@ import { MathText } from '../../components/ui/MathText';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { getSessionDetail, getSessionReview } from '../../services/examService';
 import type { SessionDetail, SessionReviewItem } from '../../types/exam';
+import { getExamModeLabelKey } from '../../utils/examMode';
 import { getErrorMessage } from '../../utils/errors';
 
 function sameId(first?: string | null, second?: string | null) {
@@ -205,11 +206,7 @@ export function ExamResultPage() {
   const backLabel = detail?.paperId ? t('backToPreview') : t('backToSubject');
   const progressPath = detail?.subjectId ? `/progress?subjectId=${encodeURIComponent(detail.subjectId)}` : '';
   const topicsPath = detail?.subjectId ? `/topics?subjectId=${encodeURIComponent(detail.subjectId)}` : '';
-  const modeLabel = detail?.mode === 'Practice'
-    ? t('practice')
-    : detail?.mode === 'MockExam'
-      ? t('mockExam')
-      : t('paperExam');
+  const modeLabel = t(getExamModeLabelKey(detail?.mode));
   const timeTakenSeconds = detail
     ? (new Date(detail.endTime || detail.serverNow).getTime() - new Date(detail.startTime).getTime()) / 1000
     : 0;

@@ -90,7 +90,7 @@ export function NotificationSettingsRow() {
         : t('notificationsDisabled');
 
   return (
-    <section className="mt-3 rounded-md border border-slate-200 bg-slate-50 p-3">
+    <section className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50/40 p-3">
       <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
         <div>
           <p className="text-sm font-black text-slate-950">{t('notifications')}</p>
@@ -100,7 +100,7 @@ export function NotificationSettingsRow() {
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
           {!state.enabled && state.supported && !state.blocked && (
             <button
-              className="h-9 rounded-md border border-emerald-700 bg-emerald-700 px-3 text-sm font-black text-white transition hover:border-emerald-800 hover:bg-emerald-800 disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-300 disabled:text-slate-600"
+              className="h-9 rounded-lg border border-emerald-700 bg-emerald-700 px-3 text-sm font-black text-white transition hover:border-emerald-800 hover:bg-emerald-800 disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-300 disabled:text-slate-600"
               disabled={saving}
               onClick={() => void toggle()}
               type="button"
@@ -112,11 +112,11 @@ export function NotificationSettingsRow() {
       </div>
 
       {state.enabled && (
-      <div className="mt-3 grid gap-3 border-t border-slate-200 pt-3 sm:max-w-xs">
+      <div className="mt-3 grid gap-3 border-t border-indigo-100 pt-3 sm:max-w-xs">
         <label className="grid gap-1">
           <span className="text-xs font-black uppercase tracking-wide text-slate-500">{t('dailyReminderTime')}</span>
           <input
-            className="h-10 rounded-md border border-slate-300 bg-white px-3 text-sm font-bold text-slate-900 outline-none focus:border-emerald-700"
+            className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
             disabled={saving}
             onChange={(event) => void savePreferences({
               ...preferences,

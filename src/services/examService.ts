@@ -1,23 +1,24 @@
 import { apiRequest } from './api';
 import type {
   EndSessionResult,
-  ExamMode,
   ActiveSession,
+  PaperSessionMode,
   ResumeSessionResult,
   SessionDetail,
   SessionReviewItem,
   StartSessionResult,
   SubmitAnswerRequest,
+  TopicSessionMode,
 } from '../types/exam';
 
-export function startPaperSession(paperId: string, mode: Extract<ExamMode, 'Practice' | 'FixedExam'>) {
+export function startPaperSession(paperId: string, mode: PaperSessionMode) {
   return apiRequest<StartSessionResult>('/examination/sessions/start', {
     method: 'POST',
     body: JSON.stringify({ paperId, mode }),
   });
 }
 
-export function startTopicSession(topicId: string, limit: number, mode: Extract<ExamMode, 'Practice' | 'FixedExam'>) {
+export function startTopicSession(topicId: string, limit: number, mode: TopicSessionMode) {
   return apiRequest<StartSessionResult>('/examination/sessions/start-topic', {
     method: 'POST',
     body: JSON.stringify({ topicId, limit, mode }),
