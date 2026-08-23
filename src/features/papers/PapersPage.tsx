@@ -67,7 +67,11 @@ export function PapersPage() {
   const visiblePapers = useMemo(
     () => papers
       .filter((paper) => paper.type === requestedType)
-      .sort((left, right) => right.year - left.year || left.title.localeCompare(right.title)),
+      .sort((left, right) => (
+        Number(left.isLocked) - Number(right.isLocked)
+        || right.year - left.year
+        || left.title.localeCompare(right.title)
+      )),
     [papers, requestedType],
   );
 
@@ -150,7 +154,7 @@ export function PapersPage() {
               const resumable = resumableSessions.some((session) => session.paperId === paper.id);
               return (
                 <button
-                  className="group grid min-h-40 w-full grid-cols-[48px_minmax(0,1fr)_32px] items-start gap-3 rounded-xl border border-[var(--sf-border)] bg-[var(--sf-surface)] p-4 text-left shadow-[var(--sf-shadow-sm)] transition hover:-translate-y-0.5 hover:border-[var(--sf-border-strong)] hover:shadow-[var(--sf-shadow-md)] focus:outline-none focus:ring-4 focus:ring-[var(--sf-focus)]"
+                  className={`group relative grid min-h-40 w-full grid-cols-[48px_minmax(0,1fr)_32px] items-start gap-3 overflow-hidden rounded-xl border bg-[var(--sf-surface)] p-4 text-left shadow-[var(--sf-shadow-sm)] transition hover:-translate-y-0.5 hover:shadow-[var(--sf-shadow-md)] focus:outline-none focus:ring-4 focus:ring-[var(--sf-focus)] ${paper.isLocked ? 'border-[var(--sf-border-strong)]' : 'border-[var(--sf-border)] hover:border-[var(--sf-border-strong)]'}`}
                   key={paper.id}
                   onClick={() => {
                     setActionError('');
@@ -167,12 +171,6 @@ export function PapersPage() {
                     <span className="flex flex-wrap items-center gap-2">
                       <span className="text-xs font-black uppercase text-[var(--sf-brand)]">{paper.year}</span>
                       {resumable && <span className="rounded-md bg-[var(--sf-success-soft)] px-2 py-1 text-[10px] font-black uppercase text-[var(--sf-success-text)]">{t('continue')}</span>}
-                      {paper.isLocked && (
-                        <span className="inline-flex items-center gap-1 rounded-md bg-[var(--sf-surface-muted)] px-2 py-1 text-[10px] font-black uppercase text-[var(--sf-text-muted)]">
-                          <LockKeyhole aria-hidden="true" className="h-3 w-3" />
-                          {t('locked')}
-                        </span>
-                      )}
                     </span>
                     <span className="mt-2 line-clamp-2 block text-base font-black leading-6 text-[var(--sf-text)]">{paper.title}</span>
                     <span className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs font-bold text-[var(--sf-text-muted)]">
@@ -185,6 +183,15 @@ export function PapersPage() {
                   <span className="grid h-8 w-8 place-items-center rounded-full text-[var(--sf-text-muted)] transition group-hover:bg-[var(--sf-surface-muted)] group-hover:text-[var(--sf-brand)]">
                     <ChevronRight aria-hidden="true" className="h-5 w-5" />
                   </span>
+
+                  {paper.isLocked && (
+                    <span className="pointer-events-none absolute inset-0 z-10 grid place-items-center bg-[var(--sf-locked-overlay)] backdrop-blur-[2px]">
+                      <span className="inline-flex items-center gap-2 rounded-lg border border-[var(--sf-border-strong)] bg-[var(--sf-locked-badge)] px-4 py-2 text-sm font-black uppercase text-[var(--sf-text)] shadow-[var(--sf-shadow-md)]">
+                        <LockKeyhole aria-hidden="true" className="h-5 w-5 text-[var(--sf-brand)]" />
+                        {t('locked')}
+                      </span>
+                    </span>
+                  )}
                 </button>
               );
             })}

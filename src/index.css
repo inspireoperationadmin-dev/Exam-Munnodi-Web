@@ -61,6 +61,8 @@
   --sf-hero-button: rgb(255 255 255 / 0.12);
   --sf-hero-button-hover: rgb(255 255 255 / 0.2);
   --sf-hero-button-border: rgb(255 255 255 / 0.52);
+  --sf-locked-overlay: rgb(248 250 252 / 0.7);
+  --sf-locked-badge: rgb(255 255 255 / 0.94);
   --sf-shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.08);
   --sf-shadow-md: 0 12px 28px -20px rgb(15 23 42 / 0.32);
   --sf-shadow-lg: 0 24px 54px -28px rgb(37 50 130 / 0.5);
@@ -120,6 +122,8 @@ html[data-theme='dark'] {
   --sf-image-scrim: rgb(0 0 0 / 0.42);
   --sf-hero-background: #030712;
   --sf-landing-hero-overlay: linear-gradient(to bottom, rgb(3 7 18 / 0.72) 0%, rgb(3 7 18 / 0.28) 28%, rgb(3 7 18 / 0.62) 62%, rgb(3 7 18 / 0.94) 100%);
+  --sf-locked-overlay: rgb(15 23 42 / 0.72);
+  --sf-locked-badge: rgb(30 41 59 / 0.96);
   --sf-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.26);
   --sf-shadow-md: 0 20px 34px -24px rgb(0 0 0 / 0.65);
   --sf-shadow-lg: 0 28px 62px -30px rgb(0 0 0 / 0.82);
