@@ -161,7 +161,7 @@ function App() {
         </Routes>
       </div>
       <StudentNavigation visible={navigationVisible} />
-      <FloatingFeedbackButton />
+      {navigationVisible && <FloatingFeedbackButton />}
       <NotificationPrompt navigationVisible={navigationVisible} />
       <SubscriptionAccessDialog />
     </>

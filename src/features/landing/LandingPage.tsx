@@ -1,7 +1,8 @@
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
-import { Target, TrendingUp, Trophy, Zap } from 'lucide-react';
+import { Check, Target, TrendingUp, Trophy, Zap } from 'lucide-react';
 import { AppLogo } from '../../components/layout/AppLogo';
+import { ThemeAppIcon } from '../../components/layout/ThemeAppIcon';
 import { AlertMessage } from '../../components/ui/AlertMessage';
 import { ButtonLink } from '../../components/ui/Button';
 import { InfoDialog } from '../../components/ui/InfoDialog';
@@ -24,9 +25,6 @@ import { ResumeSessionsPanel } from '../resume/ResumeSessionsPanel';
 import { filterResumableSessions } from '../resume/resumeSessionUtils';
 import { readActiveSubject, writeActiveSubject } from '../subjects/activeSubject';
 import { useSubscription } from '../subscription/SubscriptionContext';
-
-const getStartedButtonClass =
-  '!border-[var(--sf-primary)] !bg-[var(--sf-primary)] !text-[var(--sf-primary-text)] shadow-[var(--sf-shadow-sm)] hover:!border-[var(--sf-primary-hover)] hover:!bg-[var(--sf-primary-hover)]';
 
 type SubjectIconType =
   | 'calculator' | 'sprout' | 'palette' | 'dna' | 'bioTech' | 'chart' | 'briefcase' | 'flask'
@@ -303,264 +301,57 @@ function formatPerformance(value: number) {
 type LandingTranslator = ReturnType<typeof useLanguage>['t'];
 
 function PublicLanding({ t }: { t: LandingTranslator }) {
-  const problemItems = [
-    t('landingProblemRevision'),
-    t('landingProblemRepeat'),
-    t('landingProblemTiming'),
-    t('landingProblemFocus'),
-  ];
-
-  const featureItems = [
-    [t('landingFeaturePapersTitle'), t('landingFeaturePapersText')],
-    [t('landingFeatureTopicsTitle'), t('landingFeatureTopicsText')],
-    [t('landingFeatureMocksTitle'), t('landingFeatureMocksText')],
-    [t('landingFeatureProgressTitle'), t('landingFeatureProgressText')],
-  ];
-
-  const progressItems = [
-    [t('mastery'), t('landingProgressMastery')],
-    [t('focusNext'), t('landingProgressImproveNext')],
-    [t('recentExamScores'), t('landingProgressRecentScores')],
-  ];
-
-  const howItWorksItems = [
-    [t('landingStepProfileTitle'), t('landingStepProfileText'), '/images/setup-preview.png'],
-    [t('landingStepPracticeTitle'), t('landingStepPracticeText'), '/images/subject-hub-preview.png'],
-    [t('landingStepMockTitle'), t('landingStepMockText'), '/images/exam-preview.png'],
-    [t('landingStepProgressTitle'), t('landingStepProgressText'), '/images/progress-preview.png'],
-  ];
-
-  const trustItems = [
-    t('landingTrustSriLanka'),
-    t('landingTrustMedium'),
-    t('landingTrustMeasure'),
-  ];
-
   return (
     <main className={theme.shell.main}>
-      <section className={`${theme.shell.centered} ${theme.width.xl}`}>
-        <header className={theme.shell.header}>
-          <AppLogo label={t('brandName')} />
-          <div className="hidden items-center gap-2 sm:flex">
-            <ButtonLink size="sm" to="/login" variant="secondary">
-              {t('signIn')}
-            </ButtonLink>
-            <ButtonLink className={getStartedButtonClass} size="sm" to="/login" variant="primary">
-              {t('getStarted')}
-            </ButtonLink>
-          </div>
-        </header>
+      <section
+        aria-labelledby="public-landing-title"
+        className="relative isolate min-h-screen min-h-dvh overflow-hidden bg-[var(--sf-hero-background)]"
+      >
+        <img
+          alt="A Sri Lankan A/L student studying Biology, Chemistry, and Physics"
+          className="absolute inset-0 h-full w-full object-cover object-[center_45%] sm:object-center"
+          fetchPriority="high"
+          src="/images/herobanner.png"
+        />
+        <div aria-hidden="true" className="absolute inset-0 bg-[image:var(--sf-landing-hero-overlay)]" />
 
-        <div className="grid gap-5 py-5 sm:py-7">
-          <section className="relative overflow-hidden rounded-2xl border border-[var(--sf-border)] bg-[var(--sf-surface)] shadow-[var(--sf-shadow-sm)]">
-            <img
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 h-full w-full object-cover object-center"
-              src="/images/herobanner.png"
-            />
-            <div className="absolute inset-0 bg-linear-to-r from-[var(--sf-surface)]/95 via-[var(--sf-surface)]/78 to-[var(--sf-surface)]/20" />
-            <div className="absolute inset-0 bg-linear-to-t from-[var(--sf-image-scrim)] via-transparent to-transparent" />
+        <div className="absolute inset-x-0 top-0 z-10 mx-auto flex w-full max-w-6xl items-center gap-2 px-4 pt-[calc(1rem+env(safe-area-inset-top))] sm:px-6 sm:pt-6">
+          <ThemeAppIcon alt="" className="h-10 w-10 shrink-0 object-contain sm:h-12 sm:w-12" />
+          <h1 className="text-lg font-black text-[var(--sf-hero-on)] sm:text-2xl" id="public-landing-title">
+            {t('brandName')}
+          </h1>
+        </div>
 
-            <div className="relative z-10 grid min-h-112 items-center gap-5 px-5 py-8 sm:min-h-120 sm:px-9 lg:grid-cols-[minmax(0,0.88fr)_minmax(280px,0.55fr)]">
-              <div className="max-w-2xl">
-                <p className={theme.text.eyebrow}>{t('landingHeroEyebrow')}</p>
-                <h1 className="mt-3 max-w-2xl text-3xl font-black leading-tight text-[var(--sf-text)] sm:text-5xl">
-                  {t('landingHeroTitle')}
-                  <span className="text-[var(--sf-brand)]"> {t('landingHeroHighlight')}</span>
-                </h1>
-                <p className="mt-4 max-w-xl text-sm font-semibold leading-6 text-[var(--sf-text-muted)] sm:text-base">
-                  {t('landingHeroSubtitle')}
-                </p>
+        <div className="relative z-10 flex min-h-screen min-h-dvh items-start justify-center px-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))] pt-[38dvh] sm:items-center sm:px-6 sm:pb-10 sm:pt-20">
+          <div className="w-full max-w-xl text-center">
+            <p className="text-3xl font-black leading-tight text-[var(--sf-hero-on)] sm:text-5xl">
+              {t('landingHeroTagline')}
+            </p>
 
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <ButtonLink className={getStartedButtonClass} size="md" to="/login" variant="primary">
-                    {t('getStarted')}
-                  </ButtonLink>
-                  <ButtonLink size="md" to="/register" variant="secondary">
-                    {t('createAccount')}
-                  </ButtonLink>
-                </div>
-              </div>
-
-              <div className="hidden rounded-2xl border border-[var(--sf-border)] bg-[var(--sf-surface)]/85 p-4 shadow-[var(--sf-shadow-sm)] backdrop-blur-sm lg:block">
-                <div className="grid gap-3">
-                  {[
-                    [t('mockExam'), t('landingHeroMock')],
-                    [t('topicExam'), t('landingHeroTopic')],
-                    [t('mastery'), t('landingHeroMastery')],
-                  ].map(([title, text]) => (
-                    <div className="rounded-xl border border-[var(--sf-border)] bg-[var(--sf-surface)] p-3" key={title}>
-                      <p className="text-xs font-black uppercase tracking-wide text-[var(--sf-brand)]">{title}</p>
-                      <p className="mt-1 text-sm font-bold leading-5 text-[var(--sf-text-soft)]">{text}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section className="grid gap-4 lg:grid-cols-[0.86fr_1.14fr]">
-            <div className="rounded-2xl border border-[var(--sf-border)] bg-[var(--sf-surface)] p-5 shadow-[var(--sf-shadow-sm)] sm:p-6">
-              <p className={theme.text.eyebrow}>{t('landingProblemEyebrow')}</p>
-              <h2 className="mt-2 text-2xl font-black leading-tight text-[var(--sf-text)] sm:text-3xl">
-                {t('landingProblemTitle')}
-              </h2>
-              <div className="mt-5 grid gap-2">
-                {problemItems.map((text) => (
-                  <p className="rounded-xl bg-[var(--sf-surface-muted)] px-3 py-2 text-sm font-bold leading-6 text-[var(--sf-text-soft)]" key={text}>
-                    {text}
-                  </p>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-[var(--sf-border)] bg-[var(--sf-surface)] p-5 shadow-[var(--sf-shadow-sm)] sm:p-6">
-              <p className={theme.text.eyebrow}>{t('landingSolutionEyebrow')}</p>
-              <h2 className="mt-2 text-2xl font-black leading-tight text-[var(--sf-text)] sm:text-3xl">
-                {t('landingSolutionTitle')}
-              </h2>
-              <p className="mt-3 max-w-2xl text-sm font-semibold leading-6 text-[var(--sf-text-muted)] sm:text-base">
-                {t('landingSolutionText')}
-              </p>
-              <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                {[t('landingGoalUnderstand'), t('landingGoalPractice'), t('landingGoalExam')].map((text, index) => (
-                  <div className="rounded-xl border border-[var(--sf-border)] bg-[var(--sf-surface-muted)] p-3" key={text}>
-                    <span className="grid h-8 w-8 place-items-center rounded-lg bg-[var(--sf-primary)] text-sm font-black text-[var(--sf-primary-text)]">
-                      {index + 1}
-                    </span>
-                    <p className="mt-3 text-sm font-bold leading-6 text-[var(--sf-text-soft)]">{text}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="rounded-2xl border border-[var(--sf-border)] bg-[var(--sf-surface)] p-5 shadow-[var(--sf-shadow-sm)] sm:p-6">
-            <div className="grid gap-2 sm:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)] sm:items-end">
-              <div>
-                <p className={theme.text.eyebrow}>{t('landingFeaturesEyebrow')}</p>
-                <h2 className="mt-2 text-2xl font-black leading-tight text-[var(--sf-text)] sm:text-3xl">
-                  {t('landingFeaturesTitle')}
-                </h2>
-              </div>
-              <p className="text-sm font-semibold leading-6 text-[var(--sf-text-muted)]">
-                {t('landingFeaturesText')}
-              </p>
-            </div>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {featureItems.map(([title, text], index) => (
-                <div className="rounded-xl border border-[var(--sf-border)] bg-[var(--sf-surface-muted)] p-4" key={title}>
-                  <span className="grid h-9 w-9 place-items-center rounded-lg bg-[var(--sf-surface)] text-sm font-black text-[var(--sf-brand)] shadow-[var(--sf-shadow-sm)]">
-                    {index + 1}
+            <ul className="mx-auto mt-5 grid max-w-sm gap-2 text-left text-sm font-semibold text-[var(--sf-hero-on-muted)] sm:mt-6 sm:text-base">
+              {[
+                t('landingHeroBulletPapers'),
+                t('landingHeroBulletExams'),
+                t('landingHeroBulletProgress'),
+              ].map((item) => (
+                <li className="flex items-center gap-3" key={item}>
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[var(--sf-hero-button)] text-[var(--sf-hero-on)]">
+                    <Check aria-hidden="true" className="h-4 w-4" strokeWidth={3} />
                   </span>
-                  <h3 className="mt-4 text-lg font-black text-[var(--sf-text)]">{title}</h3>
-                  <p className="mt-2 text-sm font-semibold leading-6 text-[var(--sf-text-muted)]">{text}</p>
-                </div>
+                  <span>{item}</span>
+                </li>
               ))}
-            </div>
-          </section>
+            </ul>
 
-          <section className="grid gap-4 rounded-2xl border border-[var(--sf-border)] bg-[var(--sf-surface)] p-5 shadow-[var(--sf-shadow-sm)] sm:p-6 lg:grid-cols-[0.72fr_1fr]">
-            <div>
-              <p className={theme.text.eyebrow}>{t('landingProgressEyebrow')}</p>
-              <h2 className="mt-2 text-2xl font-black leading-tight text-[var(--sf-text)] sm:text-3xl">
-                {t('landingProgressTitle')}
-              </h2>
-              <p className="mt-3 text-sm font-semibold leading-6 text-[var(--sf-text-muted)]">
-                {t('landingProgressText')}
-              </p>
-              <div className="mt-4 rounded-xl border border-[var(--sf-border)] bg-[var(--sf-success-soft)] p-4">
-                <p className="text-sm font-black text-[var(--sf-success-text)]">{t('landingProgressMasteryFocusTitle')}</p>
-                <p className="mt-1 text-sm font-semibold leading-6 text-[var(--sf-success-text)]">
-                  {t('landingProgressMasteryFocusText')}
-                </p>
-              </div>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              {progressItems.map(([title, text]) => (
-                <div className="rounded-xl border border-[var(--sf-border)] bg-[var(--sf-surface-muted)] p-4 shadow-[var(--sf-shadow-sm)]" key={title}>
-                  <p className="text-sm font-black uppercase tracking-wide text-[var(--sf-brand)]">{title}</p>
-                  <p className="mt-2 text-sm font-semibold leading-6 text-[var(--sf-text-muted)]">{text}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="rounded-2xl border border-[var(--sf-border)] bg-[var(--sf-surface)] p-5 shadow-[var(--sf-shadow-sm)] sm:p-6">
-            <div className="grid gap-2 sm:grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)] sm:items-end">
-              <div>
-                <p className={theme.text.eyebrow}>{t('landingHowEyebrow')}</p>
-                <h2 className="mt-2 text-2xl font-black leading-tight text-[var(--sf-text)] sm:text-3xl">
-                  {t('landingHowTitle')}
-                </h2>
-              </div>
-              <p className="text-sm font-semibold leading-6 text-[var(--sf-text-muted)]">
-                {t('landingHowText')}
-              </p>
-            </div>
-            <div className="mt-5 grid gap-3 lg:grid-cols-4">
-              {howItWorksItems.map(([title, text, imageSrc], index) => (
-                <div className="rounded-xl border border-[var(--sf-border)] bg-[var(--sf-surface-muted)] p-4" key={title}>
-                  <span className="text-xs font-black uppercase tracking-wide text-[var(--sf-brand)]">
-                    {t('step')} {index + 1}
-                  </span>
-                  <div className="my-4 flex min-h-80 items-center justify-center rounded-xl border border-[var(--sf-border)] bg-[var(--sf-surface)] p-3 shadow-inner sm:min-h-88 lg:min-h-80">
-                    <img
-                      alt={title}
-                      className="block max-h-80 max-w-full rounded-lg object-contain sm:max-h-88 lg:max-h-80"
-                      loading="lazy"
-                      src={imageSrc}
-                    />
-                  </div>
-                  <h3 className="text-base font-black text-[var(--sf-text)]">{title}</h3>
-                  <p className="mt-2 text-sm font-semibold leading-6 text-[var(--sf-text-muted)]">{text}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="grid gap-4 lg:grid-cols-[1fr_0.74fr]">
-            <div className="rounded-2xl border border-[var(--sf-border)] bg-[var(--sf-surface)] p-5 shadow-[var(--sf-shadow-sm)] sm:p-6">
-              <p className={theme.text.eyebrow}>{t('landingTrustEyebrow')}</p>
-              <h2 className="mt-2 text-2xl font-black leading-tight text-[var(--sf-text)] sm:text-3xl">
-                {t('landingTrustTitle')}
-              </h2>
-              <div className="mt-5 grid gap-3">
-                {trustItems.map((text) => (
-                  <p className="rounded-xl border border-[var(--sf-border)] bg-[var(--sf-surface-muted)] px-4 py-3 text-sm font-bold leading-6 text-[var(--sf-text-soft)]" key={text}>
-                    {text}
-                  </p>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-[var(--sf-border)] bg-[var(--sf-surface-raised)] p-5 text-[var(--sf-text)] shadow-[var(--sf-shadow-sm)] sm:p-6">
-              <p className="text-xs font-black uppercase tracking-wide text-[var(--sf-brand)]">{t('landingCtaEyebrow')}</p>
-              <h2 className="mt-2 text-2xl font-black leading-tight sm:text-3xl">
-                {t('landingCtaTitle')}
-              </h2>
-              <p className="mt-3 text-sm font-semibold leading-6 text-[var(--sf-text-muted)]">
-                {t('landingCtaText')}
-              </p>
-              <ButtonLink className="mt-5 !border-[var(--sf-primary)] !bg-[var(--sf-primary)] !text-[var(--sf-primary-text)] hover:!border-[var(--sf-primary-hover)] hover:!bg-[var(--sf-primary-hover)]" size="md" to="/login" variant="primary">
-                {t('getStarted')}
+            <div className="mx-auto mt-6 grid max-w-md grid-cols-2 gap-3 sm:mt-8">
+              <ButtonLink className="w-full" size="lg" to="/register" variant="primary">
+                {t('createAccount')}
+              </ButtonLink>
+              <ButtonLink className="w-full border-[var(--sf-hero-button-border)] bg-[var(--sf-hero-button)] text-[var(--sf-hero-on)] hover:bg-[var(--sf-hero-button-hover)]" size="lg" to="/login" variant="secondary">
+                {t('signIn')}
               </ButtonLink>
             </div>
-          </section>
-
-          <footer className="grid gap-3 border-t border-[var(--sf-border)] py-5 text-sm font-semibold text-[var(--sf-text-muted)] sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-            <div>
-              <AppLogo label={t('brandName')} />
-              <p className="mt-2 max-w-lg leading-6">{t('landingFooterText')}</p>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Link className={theme.link.text} to="/login">{t('signIn')}</Link>
-              <Link className={theme.link.text} to="/register">{t('createAccount')}</Link>
-              <a className={theme.link.text} href="https://wa.me/94763143738" rel="noreferrer" target="_blank">{t('needHelp')}</a>
-            </div>
-          </footer>
+          </div>
         </div>
       </section>
     </main>
@@ -654,78 +445,6 @@ export function LandingPage() {
 
   if (!isAuthenticated) {
     return <PublicLanding t={t} />;
-
-    return (
-      <main className={theme.shell.main}>
-        <section className={`${theme.shell.centered} ${theme.width.lg}`}>
-          <header className={theme.shell.header}>
-            <AppLogo label={t('brandName')} />
-            <div className="hidden items-center gap-2 sm:flex">
-              <ButtonLink className={getStartedButtonClass} size="sm" to="/login" variant="primary">
-                {t('getStarted')}
-              </ButtonLink>
-            </div>
-          </header>
-
-          <div className="grid flex-1 content-center gap-5 py-6">
-
-            {/* ── Hero ── */}
-            <section className="relative aspect-3/2 overflow-hidden rounded-2xl border border-[var(--sf-border)] bg-[var(--sf-surface)] shadow-[var(--sf-shadow-sm)] sm:aspect-auto sm:min-h-130">
-              <img
-                alt=""
-                aria-hidden="true"
-                className="absolute left-0 top-0 h-auto w-full object-contain sm:inset-0 sm:h-full sm:object-cover sm:object-center"
-                src="/images/herobanner.png"
-              />
-              <div className="absolute inset-0 bg-linear-to-r from-[var(--sf-surface)]/88 via-[var(--sf-surface)]/52 to-transparent" />
-              <div className="absolute inset-0 bg-linear-to-t from-[var(--sf-image-scrim)] via-transparent to-transparent" />
-
-              <div className="relative z-10 flex h-full items-start p-4 pt-6 sm:min-h-130 sm:p-8 sm:pt-14">
-                <div className="max-w-2xl">
-                  <h1 className="max-w-xl text-2xl font-black leading-tight text-[var(--sf-text)] drop-shadow-sm min-[390px]:text-3xl sm:text-5xl">
-                    {t('publicLandingTitleLineOne')}
-                    <br />
-                    {t('publicLandingTitleLineTwo')}
-                    <br />
-                    <span className="text-[var(--sf-brand)]">{t('publicLandingTitleHighlight')}</span>
-                  </h1>
-
-                  <div className="mt-4 flex flex-wrap gap-3 sm:hidden">
-                    <ButtonLink className={getStartedButtonClass} size="sm" to="/login" variant="primary">
-                      {t('getStarted')}
-                    </ButtonLink>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* ── Benefit cards ── */}
-            <section className="rounded-2xl border border-[var(--sf-border)] bg-[var(--sf-surface)] p-5 shadow-[var(--sf-shadow-sm)] sm:p-6">
-              <h2 className="text-2xl font-black leading-tight text-[var(--sf-text)] sm:text-3xl">
-                {t('landingGoalTitle')}
-              </h2>
-              <div className="mt-5 grid gap-3">
-                {[
-                  t('landingGoalUnderstand'),
-                  t('landingGoalPractice'),
-                  t('landingGoalExam'),
-                ].map((text, index) => (
-                  <div key={text} className="grid grid-cols-[32px_minmax(0,1fr)] items-start gap-3 rounded-xl bg-[var(--sf-surface-muted)] p-3">
-                    <span className="grid h-8 w-8 place-items-center rounded-lg bg-[var(--sf-primary)] text-sm font-black text-[var(--sf-primary-text)]">
-                      {index + 1}
-                    </span>
-                    <p className="pt-1 text-sm font-bold leading-6 text-[var(--sf-text-soft)] sm:text-base">
-                      {text}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-          </div>
-        </section>
-      </main>
-    );
   }
 
   // ── Authenticated landing ──
