@@ -37,9 +37,9 @@ export function AuthLayout({
         </header>
 
         <section className="grid flex-1 content-center py-6">
-          <div className="rounded-2xl border border-indigo-100 bg-white p-5 shadow-sm shadow-slate-200/70 sm:p-6">
+          <div className="rounded-2xl border border-[var(--sf-border)] bg-[var(--sf-surface)] p-5 shadow-[var(--sf-shadow-sm)] sm:p-6">
           {title && (
-            <h1 className="mb-5 text-2xl font-black leading-tight text-slate-950">
+            <h1 className="mb-5 text-2xl font-black leading-tight text-[var(--sf-text)]">
               {title}
             </h1>
           )}
@@ -47,7 +47,7 @@ export function AuthLayout({
           {children}
 
           {footerText && footerAction && footerHref && (
-            <p className="mt-5 text-center text-sm font-semibold text-slate-600">
+            <p className="mt-5 text-center text-sm font-semibold text-[var(--sf-text-muted)]">
               {footerText}{' '}
               <Link className={theme.link.text} to={footerHref}>
                 {footerAction}
@@ -57,7 +57,7 @@ export function AuthLayout({
 
           {supportMessage && (
             <WhatsAppLink
-              className="mt-5 min-h-12 border-emerald-100 bg-emerald-50 text-emerald-800 hover:border-emerald-200 hover:bg-emerald-100"
+              className="mt-5 min-h-12 border-[var(--sf-border)] bg-[var(--sf-surface-muted)] text-[var(--sf-primary)] hover:border-[var(--sf-border-strong)] hover:bg-[var(--sf-surface-muted)]"
               fullWidth
               label={t('needHelp')}
               message={supportMessage}

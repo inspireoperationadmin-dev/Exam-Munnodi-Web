@@ -133,14 +133,14 @@ export function ProfileSetupPage() {
         <Panel>
         <form onSubmit={handleSubmit}>
           <div className="mb-5">
-            <h1 className="text-2xl font-bold text-slate-950">{t('setupTitle')}</h1>
-            <p className="mt-2 text-sm leading-6 text-slate-600">{t('setupSubtitle')}</p>
+            <h1 className="text-2xl font-bold text-[var(--sf-text)]">{t('setupTitle')}</h1>
+            <p className="mt-2 text-sm leading-6 text-[var(--sf-text-muted)]">{t('setupSubtitle')}</p>
           </div>
 
           {error && <div className="mb-4"><AlertMessage>{error}</AlertMessage></div>}
 
           <div className="grid gap-4 md:grid-cols-3">
-            <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
+            <label className="grid gap-1.5 text-sm font-semibold text-[var(--sf-text-soft)]">
               {t('mediumLanguage')}
               <select
                 className={theme.control.select}
@@ -153,7 +153,7 @@ export function ProfileSetupPage() {
               </select>
             </label>
 
-            <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
+            <label className="grid gap-1.5 text-sm font-semibold text-[var(--sf-text-soft)]">
               {t('stream')}
               <select
                 className={theme.control.select}
@@ -170,7 +170,7 @@ export function ProfileSetupPage() {
               </select>
             </label>
 
-            <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
+            <label className="grid gap-1.5 text-sm font-semibold text-[var(--sf-text-soft)]">
               {t('examYear')}
               <select
                 className={theme.control.select}
@@ -187,16 +187,16 @@ export function ProfileSetupPage() {
           <div className="mt-5">
             <div className="mb-3 flex items-center justify-between gap-3">
               <div>
-                <h2 className="text-base font-bold text-slate-950">{t('subjects')}</h2>
-                <p className="text-sm font-medium text-slate-500">{t('setupHint')}</p>
+                <h2 className="text-base font-bold text-[var(--sf-text)]">{t('subjects')}</h2>
+                <p className="text-sm font-medium text-[var(--sf-text-muted)]">{t('setupHint')}</p>
               </div>
-              <span className="rounded-md bg-slate-100 px-2.5 py-1 text-sm font-bold text-slate-700">
+              <span className="rounded-md bg-[var(--sf-surface-muted)] px-2.5 py-1 text-sm font-bold text-[var(--sf-text-soft)]">
                 {subjectIds.length}/3
               </span>
             </div>
 
             {subjectsLoading ? (
-              <div className={`${theme.card.static} text-sm font-semibold text-slate-500`}>
+              <div className={`${theme.card.static} text-sm font-semibold text-[var(--sf-text-muted)]`}>
                 {t('loading')}
               </div>
             ) : (
@@ -207,10 +207,10 @@ export function ProfileSetupPage() {
                     <button
                       key={subject.id}
                       type="button"
-                      className={`rounded-lg border p-3 text-left transition focus:outline-none focus:ring-2 focus:ring-slate-200 ${
+                      className={`rounded-lg border p-3 text-left transition focus:outline-none focus:ring-2 focus:ring-[var(--sf-focus)] ${
                         selected
-                          ? 'border-emerald-700 bg-emerald-50 text-slate-950'
-                          : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50'
+                          ? 'border-[var(--sf-primary)] bg-[var(--sf-success-soft)] text-[var(--sf-text)]'
+                          : 'border-[var(--sf-border)] bg-[var(--sf-surface)] text-[var(--sf-text-soft)] hover:border-[var(--sf-border-strong)] hover:bg-[var(--sf-surface-muted)]'
                       }`}
                       onClick={() => toggleSubject(subject.id)}
                       aria-pressed={selected}
@@ -218,7 +218,7 @@ export function ProfileSetupPage() {
                       <span className="flex items-start justify-between gap-2">
                         <span className="font-bold">{getAcademicName(subject, academicLanguage)}</span>
                         {selected && (
-                          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-emerald-700 text-xs font-black text-white">
+                          <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[var(--sf-primary)] text-xs font-black text-[var(--sf-primary-text)]">
                             ✓
                           </span>
                         )}

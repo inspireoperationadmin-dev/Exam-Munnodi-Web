@@ -35,6 +35,35 @@ export class ApiRequestError extends Error {
   }
 }
 
+const subscriptionRequiredEventName = 'exam-munnodi:subscription-required';
+
+export interface SubscriptionRequiredEventDetail {
+  message: string;
+}
+
+export function isSubscriptionRequiredError(error: unknown) {
+  return error instanceof ApiRequestError
+    && error.status === 403
+    && (error.code === 'SUBSCRIPTION_REQUIRED' || error.code === 'SUBSCRIPTION_LIMIT_REACHED');
+}
+
+export function listenForSubscriptionRequired(
+  callback: (detail: SubscriptionRequiredEventDetail) => void,
+) {
+  const listener = (event: Event) => {
+    callback((event as CustomEvent<SubscriptionRequiredEventDetail>).detail);
+  };
+
+  window.addEventListener(subscriptionRequiredEventName, listener);
+  return () => window.removeEventListener(subscriptionRequiredEventName, listener);
+}
+
+function notifySubscriptionRequired(message: string) {
+  window.dispatchEvent(new CustomEvent<SubscriptionRequiredEventDetail>(subscriptionRequiredEventName, {
+    detail: { message },
+  }));
+}
+
 function readToken() {
   return localStorage.getItem('student_access_token');
 }
@@ -85,7 +114,12 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
       message = response.statusText || message;
     }
 
-    throw new ApiRequestError(message, response.status, code, details);
+    const apiError = new ApiRequestError(message, response.status, code, details);
+    if (isSubscriptionRequiredError(apiError)) {
+      notifySubscriptionRequired(message);
+    }
+
+    throw apiError;
   }
 
   if (response.status === 204) {

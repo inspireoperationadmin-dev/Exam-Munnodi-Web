@@ -1,163 +1,211 @@
-import { Link, Navigate, useSearchParams } from 'react-router-dom';
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
-import { ProfileAvatar } from '../../components/layout/ProfileAvatar';
+import { CalendarDays, ChevronRight, Clock3, FileQuestion, FileText, LockKeyhole } from 'lucide-react';
 import { AlertMessage } from '../../components/ui/AlertMessage';
-import { ButtonLink } from '../../components/ui/Button';
-import { EmptyState, LoadingPanel, PageHeader, PageShell } from '../../components/ui/Layout';
-import { useAuth } from '../auth/AuthContext';
+import { EmptyState, LoadingPanel, PageShell } from '../../components/ui/Layout';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { getStudentProfile } from '../../services/academicService';
+import { getExamSessions } from '../../services/examService';
 import { getPapers } from '../../services/paperService';
-import type { PaperSummary, PaperType, StudentProfile } from '../../types/academic';
-import type { TranslationKey } from '../../i18n/translations';
-import { theme } from '../../theme/theme';
+import type { PaperSummary, PaperType } from '../../types/academic';
+import type { ExamSessionSummary, PaperSessionMode } from '../../types/exam';
 import { getErrorMessage } from '../../utils/errors';
+import { startStoredPaperSession } from '../exam/startStoredPaperSession';
+import { filterResumableSessions } from '../resume/resumeSessionUtils';
+import { PaperActionSheet } from './PaperActionSheet';
 
-function paperTypeLabelKey(type: string): TranslationKey {
-  return type === 'ModelPaper' ? 'modelPaper' : 'pastPaper';
+function newestSession(sessions: ExamSessionSummary[]) {
+  return [...sessions].sort((left, right) => (
+    new Date(right.lastActivityAt).getTime() - new Date(left.lastActivityAt).getTime()
+  ))[0] || null;
 }
 
 export function PapersPage() {
   const { t } = useLanguage();
-  const { auth } = useAuth();
-  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const subjectId = searchParams.get('subjectId');
   const requestedType: PaperType = searchParams.get('type') === 'ModelPaper' ? 'ModelPaper' : 'PastPaper';
-  const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [papers, setPapers] = useState<PaperSummary[]>([]);
-  const [profileLoading, setProfileLoading] = useState(true);
-  const [papersLoading, setPapersLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [resumableSessions, setResumableSessions] = useState<ExamSessionSummary[]>([]);
+  const [selectedPaper, setSelectedPaper] = useState<PaperSummary | null>(null);
+  const [paperSheetOpen, setPaperSheetOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
+  const [actionError, setActionError] = useState('');
+  const [startingMode, setStartingMode] = useState<PaperSessionMode | 'fresh' | null>(null);
 
   useEffect(() => {
+    if (!subjectId) return;
+
     let active = true;
-    setProfileLoading(true);
+    setLoading(true);
+    setLoadError('');
 
     getStudentProfile()
-      .then((data) => {
+      .then((profile) => Promise.all([
+        getPapers({ subjectId, medium: profile.medium || undefined }),
+        getExamSessions({ subjectId }).then(filterResumableSessions).catch(() => []),
+      ]))
+      .then(([paperItems, sessionItems]) => {
         if (!active) return;
-        setProfile(data);
+        setPapers(paperItems.filter((paper) => paper.isPublic));
+        setResumableSessions(sessionItems);
       })
-      .catch((loadError) => {
-        if (active) setError(getErrorMessage(loadError, t('loadProfileError')));
+      .catch((error) => {
+        if (active) setLoadError(getErrorMessage(error, t('papersLoadError')));
       })
       .finally(() => {
-        if (active) setProfileLoading(false);
+        if (active) setLoading(false);
       });
 
     return () => {
       active = false;
     };
-  }, [t]);
-
-  useEffect(() => {
-    if (!subjectId || profileLoading) return;
-
-    let active = true;
-    setPapersLoading(true);
-    setError('');
-
-    getPapers({
-      subjectId,
-      type: requestedType,
-      medium: profile?.medium || undefined,
-    })
-      .then((items) => {
-        if (!active) return;
-        setPapers(items.filter((paper) => paper.isPublic));
-      })
-      .catch((loadError) => {
-        if (active) setError(getErrorMessage(loadError, t('papersLoadError')));
-      })
-      .finally(() => {
-        if (active) setPapersLoading(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [profile?.medium, profileLoading, requestedType, subjectId, t]);
+  }, [subjectId, t]);
 
   const visiblePapers = useMemo(
-    () => papers.filter((paper) => paper.type === requestedType),
+    () => papers
+      .filter((paper) => paper.type === requestedType)
+      .sort((left, right) => right.year - left.year || left.title.localeCompare(right.title)),
     [papers, requestedType],
   );
 
-  if (!subjectId) {
-    return <Navigate to="/" replace />;
+  const selectedResumableSession = useMemo(() => {
+    if (!selectedPaper) return null;
+    return newestSession(resumableSessions.filter((session) => session.paperId === selectedPaper.id));
+  }, [resumableSessions, selectedPaper]);
+
+  if (!subjectId) return <Navigate replace to="/" />;
+
+  function selectType(type: PaperType) {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set('type', type);
+    setSearchParams(nextParams, { replace: true });
+    setPaperSheetOpen(false);
+    setActionError('');
+  }
+
+  function papersBackPath() {
+    return `/papers?subjectId=${encodeURIComponent(subjectId!)}&type=${encodeURIComponent(requestedType)}`;
+  }
+
+  function continueSession(session: ExamSessionSummary) {
+    const backPath = papersBackPath();
+    navigate(`/exam?sessionId=${encodeURIComponent(session.sessionId)}&backPath=${encodeURIComponent(backPath)}`);
+  }
+
+  async function startSession(mode: PaperSessionMode, replaceSessionId?: string) {
+    if (!selectedPaper || startingMode !== null) return;
+
+    setActionError('');
+    setStartingMode(replaceSessionId ? 'fresh' : mode);
+    try {
+      const backPath = papersBackPath();
+      const started = await startStoredPaperSession({
+        backPath,
+        mode,
+        paperId: selectedPaper.id,
+        replaceSessionId,
+        title: selectedPaper.title,
+      });
+      navigate(`/exam?sessionId=${encodeURIComponent(started.sessionId)}&backPath=${encodeURIComponent(backPath)}`);
+    } catch (error) {
+      setActionError(getErrorMessage(error, t('paperStartError')));
+    } finally {
+      setStartingMode(null);
+    }
   }
 
   return (
     <PageShell maxWidth="xl">
-        <PageHeader>
-          <Link
-            className={theme.link.subtleButton}
-            to={`/subject?subjectId=${encodeURIComponent(subjectId)}`}
-          >
-            {t('backToSubject')}
-          </Link>
-          <ProfileAvatar name={profile?.fullName} email={auth?.email} />
-        </PageHeader>
+      <nav aria-label={t('paperType')} className="grid grid-cols-2 rounded-xl border border-[var(--sf-border)] bg-[var(--sf-surface)] p-1 shadow-[var(--sf-shadow-sm)]">
+        {([
+          ['PastPaper', t('pastPapers')],
+          ['ModelPaper', t('modelPapers')],
+        ] as const).map(([type, label]) => {
+          const active = requestedType === type;
+          return (
+            <button
+              aria-current={active ? 'page' : undefined}
+              className={`min-h-11 rounded-lg px-3 py-2 text-sm font-black transition focus:outline-none focus:ring-4 focus:ring-[var(--sf-focus)] ${active ? 'bg-[var(--sf-primary)] text-[var(--sf-primary-text)] shadow-[var(--sf-shadow-sm)]' : 'text-[var(--sf-text-muted)] hover:bg-[var(--sf-surface-muted)] hover:text-[var(--sf-text)]'}`}
+              key={type}
+              onClick={() => selectType(type)}
+              type="button"
+            >
+              {label}
+            </button>
+          );
+        })}
+      </nav>
 
-        {error && <AlertMessage>{error}</AlertMessage>}
+      {loadError && <AlertMessage>{loadError}</AlertMessage>}
 
-        <section className="grid gap-3">
-          {profileLoading || papersLoading ? (
-            <LoadingPanel label={t('loading')} />
-          ) : visiblePapers.length ? (
-            <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-              {visiblePapers.map((paper) => (
-                <article key={paper.id} className={theme.card.static}>
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="text-xs font-black uppercase tracking-wide text-slate-500">
-                        {t(paperTypeLabelKey(paper.type))}
-                      </p>
-                      <h3 className="mt-1 line-clamp-2 text-lg font-black leading-6 text-slate-950">
-                        {paper.title}
-                      </h3>
-                    </div>
-                    <span className={`shrink-0 ${theme.badge.neutral}`}>
-                      {paper.year}
+      <section className="grid gap-3">
+        {loading ? (
+          <LoadingPanel label={t('loading')} />
+        ) : visiblePapers.length ? (
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {visiblePapers.map((paper) => {
+              const resumable = resumableSessions.some((session) => session.paperId === paper.id);
+              return (
+                <button
+                  className="group grid min-h-40 w-full grid-cols-[48px_minmax(0,1fr)_32px] items-start gap-3 rounded-xl border border-[var(--sf-border)] bg-[var(--sf-surface)] p-4 text-left shadow-[var(--sf-shadow-sm)] transition hover:-translate-y-0.5 hover:border-[var(--sf-border-strong)] hover:shadow-[var(--sf-shadow-md)] focus:outline-none focus:ring-4 focus:ring-[var(--sf-focus)]"
+                  key={paper.id}
+                  onClick={() => {
+                    setActionError('');
+                    setSelectedPaper(paper);
+                    setPaperSheetOpen(true);
+                  }}
+                  type="button"
+                >
+                  <span className="grid h-12 w-12 place-items-center rounded-xl bg-[var(--sf-selected-soft)] text-[var(--sf-brand)]">
+                    <FileText aria-hidden="true" className="h-6 w-6" />
+                  </span>
+
+                  <span className="min-w-0">
+                    <span className="flex flex-wrap items-center gap-2">
+                      <span className="text-xs font-black uppercase text-[var(--sf-brand)]">{paper.year}</span>
+                      {resumable && <span className="rounded-md bg-[var(--sf-success-soft)] px-2 py-1 text-[10px] font-black uppercase text-[var(--sf-success-text)]">{t('continue')}</span>}
+                      {paper.isLocked && (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-[var(--sf-surface-muted)] px-2 py-1 text-[10px] font-black uppercase text-[var(--sf-text-muted)]">
+                          <LockKeyhole aria-hidden="true" className="h-3 w-3" />
+                          {t('locked')}
+                        </span>
+                      )}
                     </span>
-                  </div>
+                    <span className="mt-2 line-clamp-2 block text-base font-black leading-6 text-[var(--sf-text)]">{paper.title}</span>
+                    <span className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-xs font-bold text-[var(--sf-text-muted)]">
+                      <span className="inline-flex items-center gap-1.5"><FileQuestion aria-hidden="true" className="h-4 w-4" />{paper.questionCount} {t('questions')}</span>
+                      <span className="inline-flex items-center gap-1.5"><Clock3 aria-hidden="true" className="h-4 w-4" />{paper.timeLimit} {t('minutesShort')}</span>
+                      {paper.sitting && <span className="inline-flex items-center gap-1.5"><CalendarDays aria-hidden="true" className="h-4 w-4" />{paper.sitting}</span>}
+                    </span>
+                  </span>
 
-                  <dl className="mt-4 grid grid-cols-2 gap-3 text-sm">
-                    <div>
-                      <dt className="font-bold text-slate-500">{t('medium')}</dt>
-                      <dd className="mt-1 font-black text-slate-950">{paper.medium}</dd>
-                    </div>
-                    <div>
-                      <dt className="font-bold text-slate-500">{t('questions')}</dt>
-                      <dd className="mt-1 font-black text-slate-950">{paper.questionCount}</dd>
-                    </div>
-                    <div>
-                      <dt className="font-bold text-slate-500">{t('time')}</dt>
-                      <dd className="mt-1 font-black text-slate-950">{paper.timeLimit} {t('minutesShort')}</dd>
-                    </div>
-                    {paper.sitting && (
-                      <div>
-                        <dt className="font-bold text-slate-500">{t('sitting')}</dt>
-                        <dd className="mt-1 font-black text-slate-950">{paper.sitting}</dd>
-                      </div>
-                    )}
-                  </dl>
+                  <span className="grid h-8 w-8 place-items-center rounded-full text-[var(--sf-text-muted)] transition group-hover:bg-[var(--sf-surface-muted)] group-hover:text-[var(--sf-brand)]">
+                    <ChevronRight aria-hidden="true" className="h-5 w-5" />
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <EmptyState imageSrc="/assets/nothing.svg" title={t('noPapersTitle')} text={t('noPapersSubtitle')} />
+        )}
+      </section>
 
-                  <ButtonLink
-                    className="mt-4"
-                    fullWidth
-                    to={`/paper-preview?paperId=${encodeURIComponent(paper.id)}&subjectId=${encodeURIComponent(subjectId)}&type=${encodeURIComponent(requestedType)}`}
-                    variant="primary"
-                  >
-                    {t('openPaper')}
-                  </ButtonLink>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <EmptyState title={t('noPapersTitle')} text={t('noPapersSubtitle')} />
-          )}
-        </section>
+      <PaperActionSheet
+        error={actionError}
+        onClose={() => {
+          if (startingMode === null) setPaperSheetOpen(false);
+        }}
+        onContinue={continueSession}
+        onStart={(mode, replaceSessionId) => void startSession(mode, replaceSessionId)}
+        open={paperSheetOpen}
+        paper={selectedPaper}
+        resumableSession={selectedResumableSession}
+        startingMode={startingMode}
+      />
     </PageShell>
   );
 }

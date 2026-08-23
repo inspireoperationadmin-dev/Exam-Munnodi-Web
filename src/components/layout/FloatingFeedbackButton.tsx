@@ -26,10 +26,17 @@ function feedbackMessage(pathname: string, search: string, email?: string) {
 
 export function FloatingFeedbackButton() {
   const { t } = useLanguage();
-  const { auth } = useAuth();
+  const { auth, isAuthenticated } = useAuth();
   const location = useLocation();
   const hiddenRoutes = ['/login', '/register', '/verify-email', '/setup', '/exam'];
   const hidden = hiddenRoutes.includes(location.pathname);
+  const navigationHiddenRoutes = ['/exam', '/exam-result'];
+  const navigationVisible = Boolean(
+    isAuthenticated
+    && auth?.isEmailVerified
+    && auth.isProfileSetup
+    && !navigationHiddenRoutes.includes(location.pathname),
+  );
   const message = useMemo(
     () => feedbackMessage(location.pathname, location.search, auth?.email),
     [auth?.email, location.pathname, location.search],
@@ -40,7 +47,7 @@ export function FloatingFeedbackButton() {
   return (
     <a
       aria-label={t('feedback')}
-      className={theme.feedback.button}
+      className={`${theme.feedback.button} ${navigationVisible ? theme.feedback.positionWithNavigation : theme.feedback.positionDefault}`}
       href={buildWhatsAppUrl(message)}
       rel="noreferrer"
       target="_blank"

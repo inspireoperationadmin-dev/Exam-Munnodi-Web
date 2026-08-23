@@ -1,76 +1,52 @@
 import { apiRequest } from './api';
 
-export interface SubTopicPerformance {
-  topicId: string;
-  subTopicId: string;
-  subTopicName: string;
-  topicName: string;
-  totalAttempts: number;
-  correctCount: number;
-  uniqueQuestionsAttempted: number;
-  masteredQuestions: number;
-  coveragePercentage: number;
-  masteryPercentage: number;
-  correctPercentage: number;
-  healthPercentage: number;
-  lastUpdated: string;
-}
-
-export interface TopicPerformance {
-  topicId: string;
-  topicName: string;
-  totalQuestionsInTopic: number;
-  uniqueQuestionsAttempted: number;
-  masteredQuestions: number;
-  totalAttempts: number;
-  correctCount: number;
-  coveragePercentage: number;
-  masteryPercentage: number;
-  accuracyPercentage: number;
-  healthPercentage: number;
-  lastUpdated: string;
-}
-
-export interface SubjectPerformance {
+export interface StudentProgressSubject {
   subjectId: string;
   subjectName: string;
-  totalQuestionsInSubject: number;
-  uniqueQuestionsAttempted: number;
-  masteredQuestions: number;
-  totalExams: number;
-  averageScore: number;
-  bestScore: number;
-  totalQuestionsAttempted: number;
-  overallCorrectPercentage: number;
-  coveragePercentage: number;
   masteryPercentage: number;
-  accuracyPercentage: number;
-  readinessPercentage: number;
-  studyStreakDays: number;
+  masteredQuestions: number;
+  totalQuestions: number;
   lastStudiedAt: string | null;
 }
 
-export interface ExamHistoryItem {
+export interface StudentProgressTopic {
+  subjectId: string;
+  topicId: string;
+  topicName: string;
+  masteryPercentage: number;
+  masteredQuestions: number;
+  totalQuestions: number;
+  needsImprovementSubTopicCount: number;
+  lastUpdated: string | null;
+}
+
+export interface StudentProgressFocusSubTopic {
+  subjectId: string;
+  subjectName: string;
+  topicId: string;
+  topicName: string;
+  subTopicId: string;
+  subTopicName: string;
+  reason: string;
+}
+
+export interface StudentProgressRecentExam {
   sessionId: string;
-  paperTitle: string | null;
-  date: string;
+  subjectId: string | null;
+  subjectName: string | null;
+  mode: string;
+  completedAt: string | null;
   score: number;
-  obtainedMarks: number;
-  totalMarks: number;
 }
 
-export function getSubjectPerformance() {
-  return apiRequest<SubjectPerformance[]>('/analytics/subjects');
+export interface StudentProgressSummary {
+  subjects: StudentProgressSubject[];
+  topics: StudentProgressTopic[];
+  needsImprovement: StudentProgressFocusSubTopic[];
+  recentExamScores: StudentProgressRecentExam[];
 }
 
-export function getSubTopicPerformance(subjectId: string) {
-  return apiRequest<SubTopicPerformance[]>(`/analytics/subjects/${encodeURIComponent(subjectId)}/subtopics`);
-}
-
-export function getTopicPerformance(subjectId: string) {
-  return apiRequest<TopicPerformance[]>(`/analytics/subjects/${encodeURIComponent(subjectId)}/topics`);
-}
-
-export function getExamHistory(subjectId: string) {
-  return apiRequest<ExamHistoryItem[]>(`/analytics/subjects/${encodeURIComponent(subjectId)}/history`);
+export function getStudentProgressSummary(subjectId?: string | null) {
+  const query = subjectId ? `?subjectId=${encodeURIComponent(subjectId)}` : '';
+  return apiRequest<StudentProgressSummary>(`/analytics/student-progress${query}`);
 }

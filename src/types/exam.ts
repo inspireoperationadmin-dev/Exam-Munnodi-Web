@@ -43,6 +43,26 @@ export interface ActiveSession {
   remainingSeconds: number | null;
 }
 
+export interface ExamSessionSummary {
+  sessionId: string;
+  paperId: string | null;
+  subjectId: string | null;
+  topicId: string | null;
+  paperTitle: string | null;
+  subjectName: string | null;
+  startTime: string;
+  lastActivityAt: string;
+  serverNow: string;
+  expiresAt: string | null;
+  timeLimitMinutes: number | null;
+  endTime: string | null;
+  status: string;
+  mode: ExamMode;
+  percentage: number | null;
+  obtainedMarks: number | null;
+  totalMarks: number | null;
+}
+
 export interface ResumeAnswer {
   questionId: string;
   selectedOptionId: string | null;

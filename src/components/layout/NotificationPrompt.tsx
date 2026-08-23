@@ -9,7 +9,7 @@ import {
   shouldShowNotificationPrompt,
 } from '../../services/notificationService';
 
-export function NotificationPrompt() {
+export function NotificationPrompt({ navigationVisible = false }: { navigationVisible?: boolean }) {
   const location = useLocation();
   const { auth, isAuthenticated } = useAuth();
   const { t } = useLanguage();
@@ -45,12 +45,12 @@ export function NotificationPrompt() {
   }
 
   return (
-    <aside className="fixed inset-x-3 bottom-16 z-40 mx-auto max-w-md rounded-lg border border-slate-200 bg-white p-3 shadow-xl shadow-slate-950/10 sm:right-5 sm:left-auto">
+    <aside className={`fixed inset-x-3 z-40 mx-auto max-w-md rounded-lg border border-[var(--sf-border)] bg-[var(--sf-surface)] p-3 shadow-[var(--sf-shadow-md)] sm:right-5 sm:left-auto ${navigationVisible ? 'bottom-[calc(5.75rem+env(safe-area-inset-bottom))] lg:bottom-5' : 'bottom-4 sm:bottom-5'}`}>
       <div className="grid gap-3">
         <div>
-          <p className="text-sm font-black text-slate-950">{t('notificationPromptTitle')}</p>
-          <p className="mt-1 text-sm font-semibold leading-5 text-slate-500">{t('notificationPromptText')}</p>
-          {message && <p className="mt-2 text-xs font-bold leading-5 text-slate-500">{message}</p>}
+          <p className="text-sm font-black text-[var(--sf-text)]">{t('notificationPromptTitle')}</p>
+          <p className="mt-1 text-sm font-semibold leading-5 text-[var(--sf-text-muted)]">{t('notificationPromptText')}</p>
+          {message && <p className="mt-2 text-xs font-bold leading-5 text-[var(--sf-text-muted)]">{message}</p>}
         </div>
         <div className="grid grid-cols-2 gap-2">
           <Button disabled={saving} onClick={dismiss} type="button" variant="secondary">

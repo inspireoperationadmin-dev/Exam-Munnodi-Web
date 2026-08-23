@@ -16,7 +16,7 @@ export function InfoDialog({ open, title, message, closeLabel, onClose }: InfoDi
   return (
     <div
       aria-modal="true"
-      className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 px-4"
+      className="fixed inset-0 z-50 grid place-items-center bg-[var(--sf-scrim)] px-4"
       role="dialog"
     >
       <Panel className="w-full max-w-sm shadow-xl">

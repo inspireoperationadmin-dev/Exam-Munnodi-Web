@@ -1,28 +1,34 @@
 import { useEffect, useState } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { FloatingFeedbackButton } from './components/layout/FloatingFeedbackButton';
 import { NotificationPrompt } from './components/layout/NotificationPrompt';
+import { StudentNavigation } from './components/layout/StudentNavigation';
+import { SubscriptionAccessDialog } from './components/layout/SubscriptionAccessDialog';
 import { ProtectedRoute } from './components/routing/ProtectedRoute';
 import { ScrollToTop } from './components/routing/ScrollToTop';
 import { SetupRoute } from './components/routing/SetupRoute';
 import { AppSplash } from './components/ui/AppSplash';
 import { LandingPage } from './features/landing/LandingPage';
 import { PapersPage } from './features/papers/PapersPage';
-import { PaperPreviewPage } from './features/papers/PaperPreviewPage';
 import { ExamScreenPage } from './features/exam/ExamScreenPage';
 import { ExamResultPage } from './features/exam/ExamResultPage';
 import { ProfilePage } from './features/profile/ProfilePage';
 import { ProgressPage } from './features/progress/ProgressPage';
-import { SubjectHubPage } from './features/subjects/SubjectHubPage';
+import { ResumeSessionsPage } from './features/resume/ResumeSessionsPage';
+import { SubscriptionPage } from './features/subscription/SubscriptionPage';
+import { SubscriptionUpdateNotice } from './features/subscription/SubscriptionUpdateNotice';
 import { TopicListPage } from './features/topics/TopicListPage';
 import { LoginPage } from './features/auth/LoginPage';
 import { RegisterPage } from './features/auth/RegisterPage';
 import { VerifyEmailPage } from './features/auth/VerifyEmailPage';
 import { ProfileSetupPage } from './features/setup/ProfileSetupPage';
 import { useLanguage } from './i18n/LanguageContext';
+import { useAuth } from './features/auth/AuthContext';
 
 function App() {
   const { t } = useLanguage();
+  const { auth, isAuthenticated } = useAuth();
+  const location = useLocation();
   const [booting, setBooting] = useState(true);
 
   useEffect(() => {
@@ -34,10 +40,20 @@ function App() {
     return <AppSplash label={t('brandName')} />;
   }
 
+  const navigationHiddenRoutes = ['/exam', '/exam-result'];
+  const navigationVisible = Boolean(
+    isAuthenticated
+    && auth?.isEmailVerified
+    && auth.isProfileSetup
+    && !navigationHiddenRoutes.includes(location.pathname),
+  );
+
   return (
     <>
       <ScrollToTop />
-      <Routes>
+      {isAuthenticated && <SubscriptionUpdateNotice />}
+      <div className={navigationVisible ? 'min-h-screen min-h-dvh pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0 lg:pl-60' : undefined}>
+        <Routes>
         <Route
           path="/"
           element={<LandingPage />}
@@ -61,31 +77,11 @@ function App() {
           )}
         />
         <Route
-          path="/subject"
-          element={(
-            <ProtectedRoute>
-              <SetupRoute>
-                <SubjectHubPage />
-              </SetupRoute>
-            </ProtectedRoute>
-          )}
-        />
-        <Route
           path="/papers"
           element={(
             <ProtectedRoute>
               <SetupRoute>
                 <PapersPage />
-              </SetupRoute>
-            </ProtectedRoute>
-          )}
-        />
-        <Route
-          path="/paper-preview"
-          element={(
-            <ProtectedRoute>
-              <SetupRoute>
-                <PaperPreviewPage />
               </SetupRoute>
             </ProtectedRoute>
           )}
@@ -140,11 +136,34 @@ function App() {
             </ProtectedRoute>
           )}
         />
+        <Route
+          path="/resume-sessions"
+          element={(
+            <ProtectedRoute>
+              <SetupRoute>
+                <ResumeSessionsPage />
+              </SetupRoute>
+            </ProtectedRoute>
+          )}
+        />
+        <Route
+          path="/subscription"
+          element={(
+            <ProtectedRoute>
+              <SetupRoute>
+                <SubscriptionPage />
+              </SetupRoute>
+            </ProtectedRoute>
+          )}
+        />
         <Route path="/dashboard" element={<Navigate to="/" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+        </Routes>
+      </div>
+      <StudentNavigation visible={navigationVisible} />
       <FloatingFeedbackButton />
-      <NotificationPrompt />
+      <NotificationPrompt navigationVisible={navigationVisible} />
+      <SubscriptionAccessDialog />
     </>
   );
 }

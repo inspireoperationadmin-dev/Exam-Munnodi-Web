@@ -2,6 +2,8 @@ import { apiRequest } from './api';
 import type {
   EndSessionResult,
   ActiveSession,
+  ExamMode,
+  ExamSessionSummary,
   PaperSessionMode,
   ResumeSessionResult,
   SessionDetail,
@@ -11,10 +13,16 @@ import type {
   TopicSessionMode,
 } from '../types/exam';
 
-export function startPaperSession(paperId: string, mode: PaperSessionMode) {
+interface GetExamSessionsParams {
+  paperId?: string;
+  subjectId?: string;
+  mode?: ExamMode;
+}
+
+export function startPaperSession(paperId: string, mode: PaperSessionMode, replaceSessionId?: string) {
   return apiRequest<StartSessionResult>('/examination/sessions/start', {
     method: 'POST',
-    body: JSON.stringify({ paperId, mode }),
+    body: JSON.stringify({ paperId, mode, replaceSessionId }),
   });
 }
 
@@ -63,6 +71,16 @@ export function getSessionReview(sessionId: string) {
 export function getActiveSession(subjectId?: string) {
   const query = subjectId ? `?subjectId=${encodeURIComponent(subjectId)}` : '';
   return apiRequest<ActiveSession | null>(`/examination/sessions/active${query}`);
+}
+
+export function getExamSessions(params: GetExamSessionsParams = {}) {
+  const query = new URLSearchParams();
+  if (params.paperId) query.set('paperId', params.paperId);
+  if (params.subjectId) query.set('subjectId', params.subjectId);
+  if (params.mode) query.set('mode', params.mode);
+
+  const suffix = query.toString() ? `?${query.toString()}` : '';
+  return apiRequest<ExamSessionSummary[]>(`/examination/sessions${suffix}`);
 }
 
 export function getSessionResume(sessionId: string) {

@@ -71,13 +71,11 @@ export interface PaperSummary {
   isPublic: boolean;
   timeLimit: number;
   createdAt: string;
-}
-
-export interface PaperDetail extends PaperSummary {
-  subjectId: string | null;
-  negativeMarkValue: number;
-  officialPaperCode: string | null;
-  createdByTeacherId: string | null;
+  isLocked: boolean;
+  canPractice: boolean;
+  canUseExamMode: boolean;
+  lockReason: string | null;
+  requiredPlan: string | null;
 }
 
 export interface ExamOption {

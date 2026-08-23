@@ -90,17 +90,17 @@ export function NotificationSettingsRow() {
         : t('notificationsDisabled');
 
   return (
-    <section className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50/40 p-3">
+    <section className="mt-3 rounded-lg border border-[var(--sf-border)] bg-[var(--sf-surface-muted)] p-3">
       <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
         <div>
-          <p className="text-sm font-black text-slate-950">{t('notifications')}</p>
-          <p className="mt-1 text-xs font-bold leading-5 text-slate-500">{statusText}</p>
-          {message && <p className="mt-2 text-xs font-bold leading-5 text-slate-500">{message}</p>}
+          <p className="text-sm font-black text-[var(--sf-text)]">{t('notifications')}</p>
+          <p className="mt-1 text-xs font-bold leading-5 text-[var(--sf-text-muted)]">{statusText}</p>
+          {message && <p className="mt-2 text-xs font-bold leading-5 text-[var(--sf-text-muted)]">{message}</p>}
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
           {!state.enabled && state.supported && !state.blocked && (
             <button
-              className="h-9 rounded-lg border border-emerald-700 bg-emerald-700 px-3 text-sm font-black text-white transition hover:border-emerald-800 hover:bg-emerald-800 disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-300 disabled:text-slate-600"
+              className="h-9 rounded-lg border border-[var(--sf-primary)] bg-[var(--sf-primary)] px-3 text-sm font-black text-[var(--sf-primary-text)] transition hover:border-[var(--sf-primary-hover)] hover:bg-[var(--sf-primary-hover)] disabled:cursor-not-allowed disabled:border-[var(--sf-border-strong)] disabled:bg-[var(--sf-border-strong)] disabled:text-[var(--sf-text-muted)]"
               disabled={saving}
               onClick={() => void toggle()}
               type="button"
@@ -112,11 +112,11 @@ export function NotificationSettingsRow() {
       </div>
 
       {state.enabled && (
-      <div className="mt-3 grid gap-3 border-t border-indigo-100 pt-3 sm:max-w-xs">
+      <div className="mt-3 grid gap-3 border-t border-[var(--sf-border)] pt-3 sm:max-w-xs">
         <label className="grid gap-1">
-          <span className="text-xs font-black uppercase tracking-wide text-slate-500">{t('dailyReminderTime')}</span>
+          <span className="text-xs font-black uppercase tracking-wide text-[var(--sf-text-muted)]">{t('dailyReminderTime')}</span>
           <input
-            className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-900 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+            className="h-10 rounded-lg border border-[var(--sf-border-strong)] bg-[var(--sf-surface)] px-3 text-sm font-bold text-[var(--sf-text)] outline-none transition focus:border-[var(--sf-brand)] focus:ring-4 focus:ring-[var(--sf-focus)]"
             disabled={saving}
             onChange={(event) => void savePreferences({
               ...preferences,

@@ -1,5 +1,5 @@
 import { apiRequest } from './api';
-import type { ExamQuestion, PaperDetail, PaperMedium, PaperSummary, PaperType } from '../types/academic';
+import type { PaperMedium, PaperSummary, PaperType } from '../types/academic';
 
 interface GetPapersParams {
   subjectId?: string;
@@ -18,12 +18,4 @@ export function getPapers(params: GetPapersParams = {}) {
 
   const query = search.toString();
   return apiRequest<PaperSummary[]>(`/academic/papers${query ? `?${query}` : ''}`);
-}
-
-export function getPaperDetail(paperId: string) {
-  return apiRequest<PaperDetail>(`/academic/papers/${encodeURIComponent(paperId)}`);
-}
-
-export function getPaperPreviewQuestions(paperId: string) {
-  return apiRequest<ExamQuestion[]>(`/examination/papers/${encodeURIComponent(paperId)}/questions`);
 }

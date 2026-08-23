@@ -6,11 +6,11 @@
   "scope": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
-  "theme_color": "#0f172a",
+  "theme_color": "#4f46e5",
   "icons": [
     {
-      "src": "/images/appicon.png",
-      "sizes": "1254x1254",
+      "src": "/EM_Logo.png",
+      "sizes": "1881x1881",
       "type": "image/png",
       "purpose": "any maskable"
     }

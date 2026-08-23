@@ -35,9 +35,17 @@ export function LoadingPanel({ label }: { label: string }) {
   );
 }
 
-export function EmptyState({ title, text }: { title: string; text: string }) {
+export function EmptyState({ title, text, imageSrc }: { title: string; text: string; imageSrc?: string }) {
   return (
     <Panel className="text-center">
+      {imageSrc && (
+        <img
+          alt=""
+          aria-hidden="true"
+          className="mx-auto mb-4 h-36 w-36 object-contain opacity-90"
+          src={imageSrc}
+        />
+      )}
       <h2 className={theme.text.panelTitle}>{title}</h2>
       <p className={`mx-auto mt-2 max-w-xl ${theme.text.body}`}>{text}</p>
     </Panel>

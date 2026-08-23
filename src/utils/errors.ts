@@ -1,6 +1,7 @@
-import { ApiRequestError } from '../services/api';
+import { ApiRequestError, isSubscriptionRequiredError } from '../services/api';
 
 export function getErrorMessage(error: unknown, fallback: string) {
+  if (isSubscriptionRequiredError(error)) return '';
   return error instanceof Error && error.message.trim() ? error.message : fallback;
 }
 
