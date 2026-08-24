@@ -318,6 +318,10 @@ export function ExamScreenPage() {
     );
   }
 
+  if (result) {
+    return <Navigate to={`/exam-result?sessionId=${encodeURIComponent(sessionId)}`} replace />;
+  }
+
   const activeSessionId = sessionId;
   const backPath = stored?.backPath || backPathParam || '/';
   const currentSelectedOptionId = selectedAnswers[currentQuestion.id] || '';
@@ -450,41 +454,7 @@ export function ExamScreenPage() {
         <section className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[minmax(0,1fr)_300px]">
           <article className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-[var(--sf-border)] bg-[var(--sf-surface)] shadow-[var(--sf-shadow-sm)]">
             <div ref={questionScrollRef} className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-5">
-              {result ? (
-                <div className="grid min-h-full place-items-center">
-                  <section className="w-full max-w-md rounded-lg border border-[var(--sf-border)] bg-[var(--sf-surface-muted)] p-5 text-center">
-                    <p className="text-sm font-black uppercase tracking-wide text-[var(--sf-text-muted)]">{t('examResult')}</p>
-                    <h1 className="mt-2 text-3xl font-black text-[var(--sf-text)]">
-                      {Math.round(result.percentage)}%
-                    </h1>
-                    <p className="mt-1 text-sm font-bold text-[var(--sf-text-muted)]">
-                      {result.obtainedMarks} / {result.totalMarks} {t('score')}
-                    </p>
-                    <dl className="mt-5 grid grid-cols-3 gap-2 text-sm">
-                      <div className="rounded-md bg-[var(--sf-surface)] p-3">
-                        <dt className="font-bold text-[var(--sf-text-muted)]">{t('correctAnswer')}</dt>
-                        <dd className="mt-1 text-lg font-black text-[var(--sf-success-text)]">{result.correctCount}</dd>
-                      </div>
-                      <div className="rounded-md bg-[var(--sf-surface)] p-3">
-                        <dt className="font-bold text-[var(--sf-text-muted)]">{t('wrongAnswer')}</dt>
-                        <dd className="mt-1 text-lg font-black text-[var(--sf-danger-text)]">{result.wrongCount}</dd>
-                      </div>
-                      <div className="rounded-md bg-[var(--sf-surface)] p-3">
-                        <dt className="font-bold text-[var(--sf-text-muted)]">{t('unanswered')}</dt>
-                        <dd className="mt-1 text-lg font-black text-[var(--sf-text-soft)]">{result.skippedCount}</dd>
-                      </div>
-                    </dl>
-                    <button
-                      className="mt-5 h-11 w-full rounded-md bg-[var(--sf-primary)] px-4 text-sm font-black text-[var(--sf-primary-text)]"
-                      onClick={leaveExam}
-                      type="button"
-                    >
-                      {t('leaveSession')}
-                    </button>
-                  </section>
-                </div>
-              ) : (
-                <>
+              <>
                   <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--sf-border)] pb-3 sm:pb-4">
                     <div>
                       <p className="text-xs font-black uppercase tracking-wide text-[var(--sf-text-muted)]">
@@ -596,8 +566,7 @@ export function ExamScreenPage() {
                   {savingQuestionId === currentQuestion.id && (
                     <p className="mt-3 text-xs font-bold text-[var(--sf-text-muted)]">{t('saving')}</p>
                   )}
-                </>
-              )}
+              </>
             </div>
 
             {!result && (

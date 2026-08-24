@@ -105,6 +105,7 @@ export interface SessionDetail {
   sessionId: string;
   paperId: string | null;
   subjectId: string | null;
+  topicId: string | null;
   paperTitle: string | null;
   startTime: string;
   serverNow: string;
@@ -116,9 +117,14 @@ export interface SessionDetail {
   obtainedMarks: number;
   totalMarks: number;
   percentage: number;
+  isPassing: boolean;
   correctCount: number;
   wrongCount: number;
   skippedCount: number;
+  timeTakenSeconds: number;
+  affectsMastery: boolean;
+  hasReviewData: boolean;
+  reviewAvailableUntil: string | null;
   responses: unknown[];
 }
 
