@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { CalendarDays, Check, Clock3, MessageCircle, Sparkles } from 'lucide-react';
+import { CalendarDays, Check, Clock3, LockKeyhole, MessageCircle, Sparkles } from 'lucide-react';
 import { AlertMessage } from '../../components/ui/AlertMessage';
 import { Button } from '../../components/ui/Button';
 import { LoadingPanel, PageShell } from '../../components/ui/Layout';
@@ -221,6 +221,75 @@ function PlanCard({
   );
 }
 
+function FreePlanCard({ current, plan }: { current: boolean; plan: SubscriptionPlan }) {
+  const included = [
+    `${plan.freePastPaperCount ?? 0} oldest past papers per subject`,
+    `${plan.freeModelPaperCount ?? 0} oldest model papers per subject`,
+    'Practice mode for included papers',
+    `${formatLimit(plan.monthlyMockExamLimit)} mock exams`,
+    `${formatLimit(plan.monthlyUnitExamLimit)} unit exams`,
+    'Overall subject mastery',
+  ];
+  const upgradeFeatures = [
+    'Timed paper exam mode',
+    'Topic guidance and recent exam scores',
+  ];
+
+  return (
+    <article className={`grid min-h-full content-between gap-5 ${theme.card.static} ${current ? 'border-[var(--sf-selected-border)]' : ''}`}>
+      <div>
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className={theme.text.eyebrow}>Free</p>
+            <h3 className="mt-1 text-xl font-black text-[var(--sf-text)]">Free forever</h3>
+          </div>
+          {current && <span className={theme.badge.dark}>Current</span>}
+        </div>
+
+        <div className="mt-5">
+          <p className="text-3xl font-black text-[var(--sf-text)]">
+            Rs. 0
+            <span className="ml-1 text-sm font-bold text-[var(--sf-text-muted)]">/ forever</span>
+          </p>
+          <p className="mt-2 text-sm font-semibold leading-6 text-[var(--sf-text-muted)]">
+            The oldest published papers stay available in every selected subject.
+          </p>
+        </div>
+
+        <ul className="mt-5 grid gap-3">
+          {included.map((benefit) => (
+            <li className="grid grid-cols-[20px_minmax(0,1fr)] gap-2 text-sm font-semibold leading-5 text-[var(--sf-text-soft)]" key={benefit}>
+              <Check aria-hidden="true" className="mt-0.5 h-4 w-4 text-[var(--sf-success-text)]" />
+              <span>{benefit}</span>
+            </li>
+          ))}
+        </ul>
+
+        <div className="mt-5 border-t border-[var(--sf-border)] pt-4">
+          <p className="text-xs font-black uppercase text-[var(--sf-text-muted)]">Upgrade to unlock</p>
+          <ul className="mt-3 grid gap-2">
+            {upgradeFeatures.map((feature) => (
+              <li className="grid grid-cols-[20px_minmax(0,1fr)] gap-2 text-sm font-semibold leading-5 text-[var(--sf-text-muted)]" key={feature}>
+                <LockKeyhole aria-hidden="true" className="mt-0.5 h-4 w-4" />
+                <span>{feature}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <button
+        className={`${theme.button.base} ${theme.button.sizes.lg} ${theme.button.variants.secondary} w-full gap-2`}
+        disabled
+        type="button"
+      >
+        <Check aria-hidden="true" className="h-4 w-4" />
+        Included forever
+      </button>
+    </article>
+  );
+}
+
 export function SubscriptionPage() {
   const { t } = useLanguage();
   const { auth } = useAuth();
@@ -261,6 +330,10 @@ export function SubscriptionPage() {
   const visiblePaidPlans = useMemo(
     () => plans.filter((plan) => !plan.isFree && plan.billingCycle === billingCycle),
     [billingCycle, plans],
+  );
+  const freePlan = useMemo(
+    () => plans.find((plan) => plan.isFree) || null,
+    [plans],
   );
 
   async function claimOffer() {
@@ -352,8 +425,9 @@ export function SubscriptionPage() {
               </div>
             </div>
 
-            {visiblePaidPlans.length ? (
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            {(freePlan || visiblePaidPlans.length) ? (
+              <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                {freePlan && <FreePlanCard current={status?.tier === 'Free'} plan={freePlan} />}
                 {visiblePaidPlans.map((plan) => (
                   <PlanCard
                     currentPlanCode={status?.planCode}
@@ -368,6 +442,11 @@ export function SubscriptionPage() {
                 ))}
               </div>
             ) : (
+              <p className="mt-4 rounded-xl border border-dashed border-[var(--sf-border)] bg-[var(--sf-surface)] p-5 text-sm font-bold text-[var(--sf-text-muted)]">
+                {t('noPlansText')}
+              </p>
+            )}
+            {freePlan && !visiblePaidPlans.length && (
               <p className="mt-4 rounded-xl border border-dashed border-[var(--sf-border)] bg-[var(--sf-surface)] p-5 text-sm font-bold text-[var(--sf-text-muted)]">
                 {t('noPlansText')}
               </p>
