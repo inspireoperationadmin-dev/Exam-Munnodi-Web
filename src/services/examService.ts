@@ -1,7 +1,6 @@
 import { apiRequest } from './api';
 import type {
   EndSessionResult,
-  ActiveSession,
   ExamMode,
   ExamSessionSummary,
   PaperSessionMode,
@@ -66,11 +65,6 @@ export function getSessionDetail(sessionId: string) {
 
 export function getSessionReview(sessionId: string) {
   return apiRequest<SessionReviewItem[]>(`/examination/sessions/${encodeURIComponent(sessionId)}/review`);
-}
-
-export function getActiveSession(subjectId?: string) {
-  const query = subjectId ? `?subjectId=${encodeURIComponent(subjectId)}` : '';
-  return apiRequest<ActiveSession | null>(`/examination/sessions/active${query}`);
 }
 
 export function getExamSessions(params: GetExamSessionsParams = {}) {

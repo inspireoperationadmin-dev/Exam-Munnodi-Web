@@ -28,21 +28,6 @@ export interface StartSessionResult {
   questions: StartedExamQuestion[];
 }
 
-export interface ActiveSession {
-  sessionId: string;
-  mode: ExamMode;
-  paperId: string | null;
-  subjectId: string | null;
-  title: string | null;
-  startTime: string;
-  lastActivityAt: string;
-  expiresAt: string | null;
-  serverNow: string;
-  answeredCount: number;
-  totalQuestions: number;
-  remainingSeconds: number | null;
-}
-
 export interface ExamSessionSummary {
   sessionId: string;
   paperId: string | null;
@@ -105,7 +90,6 @@ export interface SessionDetail {
   sessionId: string;
   paperId: string | null;
   subjectId: string | null;
-  topicId: string | null;
   paperTitle: string | null;
   startTime: string;
   serverNow: string;
@@ -124,8 +108,6 @@ export interface SessionDetail {
   timeTakenSeconds: number;
   affectsMastery: boolean;
   hasReviewData: boolean;
-  reviewAvailableUntil: string | null;
-  responses: unknown[];
 }
 
 export interface ReviewOption {
