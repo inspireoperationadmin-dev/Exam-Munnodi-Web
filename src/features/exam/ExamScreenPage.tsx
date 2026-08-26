@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom';
+import { PanelRightClose, PanelRightOpen, X } from 'lucide-react';
 import { AlertMessage } from '../../components/ui/AlertMessage';
 import { ConfirmDialog } from '../../components/ui/ConfirmDialog';
 import { LoadingOverlay } from '../../components/ui/LoadingOverlay';
@@ -121,6 +122,7 @@ export function ExamScreenPage() {
   const [leavingSession, setLeavingSession] = useState(false);
   const [endingSession, setEndingSession] = useState(false);
   const [navigatorOpen, setNavigatorOpen] = useState(false);
+  const [desktopNavigatorOpen, setDesktopNavigatorOpen] = useState(true);
   const [now, setNow] = useState(Date.now());
   const questionEnteredAtRef = useRef(Date.now());
   const questionScrollRef = useRef<HTMLDivElement | null>(null);
@@ -451,7 +453,7 @@ export function ExamScreenPage() {
 
         {error && <AlertMessage>{error}</AlertMessage>}
 
-        <section className="grid min-h-0 flex-1 gap-3 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <section className={`grid min-h-0 flex-1 gap-3 ${desktopNavigatorOpen ? 'lg:grid-cols-[minmax(0,1fr)_300px]' : 'lg:grid-cols-1'}`}>
           <article className="flex min-h-0 flex-col overflow-hidden rounded-lg border border-[var(--sf-border)] bg-[var(--sf-surface)] shadow-[var(--sf-shadow-sm)]">
             <div ref={questionScrollRef} className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-5">
               <>
@@ -461,12 +463,27 @@ export function ExamScreenPage() {
                         {t('questionNumber')} {currentIndex + 1} {t('of')} {questions.length}
                       </p>
                     </div>
-                    {isTimedMode && (
-                      <div className="hidden rounded-md bg-[var(--sf-primary)] px-4 py-2 text-right text-[var(--sf-primary-text)] sm:block">
-                        <p className="text-xs font-bold opacity-75">{t('timeLeft')}</p>
-                        <p className="text-xl font-black tabular-nums">{formatClock(remainingSeconds ?? 0)}</p>
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {isTimedMode && (
+                        <div className="hidden rounded-md bg-[var(--sf-primary)] px-4 py-2 text-right text-[var(--sf-primary-text)] sm:block">
+                          <p className="text-xs font-bold opacity-75">{t('timeLeft')}</p>
+                          <p className="text-xl font-black tabular-nums">{formatClock(remainingSeconds ?? 0)}</p>
+                        </div>
+                      )}
+                      <button
+                        aria-controls="exam-question-navigator"
+                        aria-expanded={desktopNavigatorOpen}
+                        aria-label={desktopNavigatorOpen ? t('collapseQuestionNavigator') : t('expandQuestionNavigator')}
+                        className="hidden h-11 w-11 place-items-center rounded-md border border-[var(--sf-border-strong)] bg-[var(--sf-surface)] text-[var(--sf-text-soft)] transition hover:bg-[var(--sf-surface-muted)] focus:outline-none focus:ring-4 focus:ring-[var(--sf-focus)] lg:grid"
+                        onClick={() => setDesktopNavigatorOpen((open) => !open)}
+                        title={desktopNavigatorOpen ? t('collapseQuestionNavigator') : t('expandQuestionNavigator')}
+                        type="button"
+                      >
+                        {desktopNavigatorOpen
+                          ? <PanelRightClose aria-hidden="true" className="h-5 w-5" />
+                          : <PanelRightOpen aria-hidden="true" className="h-5 w-5" />}
+                      </button>
+                    </div>
                   </div>
 
                   <div className="mt-5 min-w-0">
@@ -587,29 +604,32 @@ export function ExamScreenPage() {
                   >
                     {t('questions')}
                   </button>
-                  <button
-                    className="h-11 rounded-md border border-[var(--sf-border-strong)] bg-[var(--sf-surface)] px-4 text-sm font-black text-[var(--sf-text-soft)] disabled:cursor-not-allowed disabled:bg-[var(--sf-surface-muted)] disabled:text-[var(--sf-text-muted)]"
-                    disabled={currentIndex === questions.length - 1}
-                    onClick={() => goToQuestion(currentIndex + 1)}
-                    type="button"
-                  >
-                    {t('next')}
-                  </button>
-                  <button
-                    className="col-span-3 h-11 rounded-md bg-[var(--sf-primary)] px-4 text-sm font-black text-[var(--sf-primary-text)] disabled:cursor-not-allowed disabled:bg-[var(--sf-border-strong)] lg:col-span-1"
-                    disabled={endingRef.current}
-                    onClick={requestFinishSession}
-                    type="button"
-                  >
-                    {isPractice ? t('finishPractice') : t('submitExam')}
-                  </button>
+                  {currentIndex === questions.length - 1 ? (
+                    <button
+                      className="h-11 rounded-md bg-[var(--sf-primary)] px-4 text-sm font-black text-[var(--sf-primary-text)] disabled:cursor-not-allowed disabled:bg-[var(--sf-border-strong)] disabled:text-[var(--sf-text-muted)]"
+                      disabled={endingSession || Boolean(savingQuestionId)}
+                      onClick={requestFinishSession}
+                      type="button"
+                    >
+                      {t('finish')}
+                    </button>
+                  ) : (
+                    <button
+                      className="h-11 rounded-md border border-[var(--sf-border-strong)] bg-[var(--sf-surface)] px-4 text-sm font-black text-[var(--sf-text-soft)] transition hover:bg-[var(--sf-surface-muted)]"
+                      onClick={() => goToQuestion(currentIndex + 1)}
+                      type="button"
+                    >
+                      {t('next')}
+                    </button>
+                  )}
                 </div>
               </footer>
             )}
           </article>
 
-          {!result && (
-            <aside className="hidden min-h-0 flex-col rounded-lg border border-[var(--sf-border)] bg-[var(--sf-surface)] p-4 shadow-[var(--sf-shadow-sm)] lg:flex">
+          {!result && desktopNavigatorOpen && (
+            <aside id="exam-question-navigator" className="hidden min-h-0 flex-col rounded-lg border border-[var(--sf-border)] bg-[var(--sf-surface)] p-4 shadow-[var(--sf-shadow-sm)] lg:flex">
+              <h2 className="mb-4 text-base font-black text-[var(--sf-text)]">{t('questions')}</h2>
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="rounded-md bg-[var(--sf-surface-muted)] p-3">
                   <p className="font-bold text-[var(--sf-text-muted)]">{t('answered')}</p>
@@ -636,7 +656,7 @@ export function ExamScreenPage() {
                 </span>
               </div>
 
-              <div className="mt-4 grid grid-cols-5 gap-2 overflow-y-auto pr-1 lg:grid-cols-4">
+              <div className="mt-4 grid min-h-0 flex-1 grid-cols-5 content-start gap-2 overflow-y-auto pr-1 lg:grid-cols-4">
                 {questions.map((question, index) => {
                   const answered = Boolean(selectedAnswers[question.id]);
                   const active = index === currentIndex;
@@ -672,7 +692,7 @@ export function ExamScreenPage() {
                 onClick={() => setNavigatorOpen(false)}
                 type="button"
               >
-                X
+                <X aria-hidden="true" className="h-5 w-5" />
               </button>
             </header>
             <div className="flex flex-wrap gap-3 border-b border-[var(--sf-border)] px-4 py-3 text-xs font-bold text-[var(--sf-text-muted)]">
