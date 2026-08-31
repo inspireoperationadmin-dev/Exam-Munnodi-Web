@@ -9,8 +9,10 @@ import { LoadingOverlay } from '../../components/ui/LoadingOverlay';
 import { PasswordField } from '../../components/ui/PasswordField';
 import { useLanguage } from '../../i18n/LanguageContext';
 import { loginStudent } from '../../services/authService';
-import { getLoginErrorMessage } from '../../utils/errors';
+import { getAccountRestriction, getLoginErrorMessage } from '../../utils/errors';
+import type { AccountRestriction } from '../../utils/errors';
 import { useAuth } from './AuthContext';
+import { AccountRestrictionDialog } from './AccountRestrictionDialog';
 
 export function LoginPage() {
   const { t } = useLanguage();
@@ -20,6 +22,7 @@ export function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [accountRestriction, setAccountRestriction] = useState<AccountRestriction | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const redirectTo = typeof location.state === 'object' && location.state && 'from' in location.state
@@ -29,6 +32,7 @@ export function LoginPage() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError('');
+    setAccountRestriction(null);
     setSubmitting(true);
 
     try {
@@ -43,7 +47,12 @@ export function LoginPage() {
         navigate(redirectTo, { replace: true });
       }
     } catch (loginError) {
-      setError(getLoginErrorMessage(loginError, t('loginError')));
+      const restriction = getAccountRestriction(loginError);
+      if (restriction) {
+        setAccountRestriction(restriction);
+      } else {
+        setError(getLoginErrorMessage(loginError, t('loginError')));
+      }
     } finally {
       setSubmitting(false);
     }
@@ -82,6 +91,11 @@ export function LoginPage() {
         </Button>
       </form>
       <LoadingOverlay label={t('signingIn')} open={submitting} />
+      <AccountRestrictionDialog
+        email={email}
+        restriction={accountRestriction}
+        onClose={() => setAccountRestriction(null)}
+      />
     </AuthLayout>
   );
 }

@@ -1,5 +1,5 @@
 import { apiRequest } from './api';
-import type { AuthResponse, LoginRequest, RegisterRequest } from '../types/auth';
+import type { AuthResponse, LoginRequest, RegisterRequest, VerifyOtpResponse } from '../types/auth';
 
 export function loginStudent(payload: LoginRequest) {
   return apiRequest<AuthResponse>('/auth/login', {
@@ -32,7 +32,7 @@ export function sendOtp(email: string) {
 }
 
 export function verifyOtp(email: string, code: string) {
-  return apiRequest<AuthResponse>('/auth/otp/verify', {
+  return apiRequest<VerifyOtpResponse>('/auth/otp/verify', {
     method: 'POST',
     auth: false,
     body: JSON.stringify({ email, code }),

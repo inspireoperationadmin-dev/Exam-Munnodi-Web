@@ -2,7 +2,6 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { Check, Target, TrendingUp, Trophy, Zap } from 'lucide-react';
 import { AppLogo } from '../../components/layout/AppLogo';
-import { ThemeAppIcon } from '../../components/layout/ThemeAppIcon';
 import { AlertMessage } from '../../components/ui/AlertMessage';
 import { ButtonLink } from '../../components/ui/Button';
 import { InfoDialog } from '../../components/ui/InfoDialog';
@@ -316,7 +315,11 @@ function PublicLanding({ t }: { t: LandingTranslator }) {
         <div aria-hidden="true" className="absolute inset-0 bg-[image:var(--sf-landing-hero-overlay)]" />
 
         <div className="absolute inset-x-0 top-0 z-10 mx-auto flex w-full max-w-6xl items-center gap-2 px-4 pt-[calc(1rem+env(safe-area-inset-top))] sm:px-6 sm:pt-6">
-          <ThemeAppIcon alt="" className="h-10 w-10 shrink-0 object-contain sm:h-12 sm:w-12" />
+          <img
+            alt=""
+            className="h-10 w-10 shrink-0 object-contain sm:h-12 sm:w-12"
+            src="/EM_DARK.png"
+          />
           <h1 className="text-lg font-black text-[var(--sf-hero-on)] sm:text-2xl" id="public-landing-title">
             {t('brandName')}
           </h1>

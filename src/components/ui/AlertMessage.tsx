@@ -9,7 +9,11 @@ export function AlertMessage({ children, tone = 'error' }: AlertMessageProps) {
   const classes = tone === 'error' ? theme.alert.error : theme.alert.info;
 
   return (
-    <div className={`${theme.alert.base} ${classes}`}>
+    <div
+      aria-live={tone === 'error' ? 'assertive' : 'polite'}
+      className={`${theme.alert.base} ${classes}`}
+      role={tone === 'error' ? 'alert' : 'status'}
+    >
       {children}
     </div>
   );

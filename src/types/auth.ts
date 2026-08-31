@@ -16,6 +16,7 @@ export interface LoginRequest {
 }
 
 export interface RegisterRequest {
+  registrationTicket: string;
   email: string;
   password: string;
   fullName: string;
@@ -24,4 +25,12 @@ export interface RegisterRequest {
   subjectId: null;
   qualification: null;
   bio: null;
+}
+
+export interface VerifyOtpResponse {
+  email: string;
+  requiresAccountCreation: boolean;
+  registrationTicket: string | null;
+  registrationTicketExpiresAt: string | null;
+  authentication: AuthResponse | null;
 }

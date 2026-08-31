@@ -9,13 +9,13 @@ import { FormField } from '../../components/ui/FormField';
 import { LoadingOverlay } from '../../components/ui/LoadingOverlay';
 import { PasswordField } from '../../components/ui/PasswordField';
 import { useLanguage } from '../../i18n/LanguageContext';
-import { registerStudent } from '../../services/authService';
+import { sendOtp } from '../../services/authService';
 import { getRegisterErrorMessage } from '../../utils/errors';
-import { useAuth } from './AuthContext';
+import { useRegistration } from './RegistrationContext';
 
 export function RegisterPage() {
   const { t } = useLanguage();
-  const { saveAuth } = useAuth();
+  const { beginRegistration } = useRegistration();
   const navigate = useNavigate();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -44,19 +44,15 @@ export function RegisterPage() {
     setSubmitting(true);
 
     try {
-      const auth = await registerStudent({
-        fullName,
-        email,
-        password,
+      const normalizedEmail = email.trim().toLowerCase();
+      await sendOtp(normalizedEmail);
+      beginRegistration({
+        fullName: fullName.trim(),
+        email: normalizedEmail,
         phoneNumber: phoneNumber.trim() || null,
-      });
-      saveAuth(auth);
+      }, password);
 
-      if (!auth.isEmailVerified) {
-        navigate('/verify-email', { replace: true });
-      } else {
-        navigate('/setup', { replace: true });
-      }
+      navigate('/verify-email', { replace: true });
     } catch (registerError) {
       setError(getRegisterErrorMessage(registerError, t('registerError')));
     } finally {
@@ -90,11 +86,18 @@ export function RegisterPage() {
           required
         />
         <FormField
+          aria-describedby="phone-number-hint"
           label={`${t('phoneNumber')} (${t('optional')})`}
           autoComplete="tel"
+          inputMode="tel"
+          maxLength={20}
+          pattern="[0-9+()\\s-]{7,20}"
           value={phoneNumber}
           onChange={(event) => setPhoneNumber(event.target.value)}
         />
+        <p className="-mt-2 text-xs font-semibold leading-5 text-[var(--sf-text-muted)]" id="phone-number-hint">
+          {t('phoneNumberHint')}
+        </p>
         <PasswordField
           label={t('password')}
           aria-describedby="password-requirements"
@@ -137,7 +140,7 @@ export function RegisterPage() {
           {submitting ? t('loading') : t('createAccount')}
         </Button>
       </form>
-      <LoadingOverlay label={t('creatingAccount')} open={submitting} />
+      <LoadingOverlay label={t('sendingVerificationCode')} open={submitting} />
     </AuthLayout>
   );
 }

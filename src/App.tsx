@@ -62,11 +62,7 @@ function App() {
         <Route path="/register" element={<RegisterPage />} />
         <Route
           path="/verify-email"
-          element={(
-            <ProtectedRoute>
-              <VerifyEmailPage />
-            </ProtectedRoute>
-          )}
+          element={<VerifyEmailPage />}
         />
         <Route
           path="/setup"
